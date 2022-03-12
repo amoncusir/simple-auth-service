@@ -17,4 +17,21 @@ class InMemoryAuthenticationRepository: AuthenticationRepository
     {
         return cache.remove(refreshId) ?: throw NotFoundEntity(refreshId, "Authentication")
     }
+
+    override fun deleteByUserId(userId: String): List<Authentication>
+    {
+        val toRemoveAuth = findByUserId(userId)
+
+        toRemoveAuth.forEach { cache.remove(it.refreshId) }
+
+        return toRemoveAuth
+    }
+
+    override fun findByUserId(userId: String): List<Authentication>
+    {
+        return cache
+            .entries
+            .map { it.value }
+            .filter { it.user.userId == userId }
+    }
 }

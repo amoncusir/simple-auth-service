@@ -7,7 +7,7 @@ import info.digitalpoet.auth.domain.repository.AuthenticationRepository
 import info.digitalpoet.auth.domain.repository.InMemoryAuthenticationRepository
 import info.digitalpoet.auth.domain.repository.InMemoryUserRepository
 import info.digitalpoet.auth.domain.repository.UserRepository
-import info.digitalpoet.auth.domain.service.PasswordComparerService
+import info.digitalpoet.auth.domain.service.PasswordManagerService
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -15,9 +15,9 @@ fun repositoryModule(): Module
 {
     return module(createdAtStart = true) {
         single<UserRepository> {
-            val passwordComparerService = get<PasswordComparerService>()
+            val passwordManagerService = get<PasswordManagerService>()
 
-            val password = passwordComparerService.encode("mondieu")
+            val password = passwordManagerService.encode("mondieu")
 
             InMemoryUserRepository(listOf(
                 User("my-id", "aran@digitalpoet.info", password, true, listOf(Policy("*", listOf("*"), PolicyEffect.ALLOW)))

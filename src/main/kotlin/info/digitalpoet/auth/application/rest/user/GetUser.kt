@@ -11,22 +11,15 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import org.koin.ktor.ext.inject
 
-data class UserResponse(
-    val userId: String,
-    val email: String,
-    val policies: List<Policy>
-)
-
 fun Route.getUser() {
 
     val userFinder by inject<UserService>()
 
     get {
         val token = call.authentication.principal<Token>() ?: throw UnauthorizedPetition()
+
         val user = userFinder.getUserById(token.userId)
-        val response = UserResponse(user.userId, user.email, user.policies)
 
-        call.respond(hashMapOf("user" to response))
+        call.respond(hashMapOf("user" to user.toResponse()))
     }
-
 }

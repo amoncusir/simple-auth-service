@@ -1,12 +1,14 @@
 package info.digitalpoet.auth.module
 
 import info.digitalpoet.auth.domain.service.JWTTokenService
-import info.digitalpoet.auth.domain.service.PasswordComparerService
+import info.digitalpoet.auth.domain.service.PasswordManagerService
 import info.digitalpoet.auth.domain.service.PolicyUserAuthenticationService
-import info.digitalpoet.auth.domain.service.DigestPasswordComparerService
+import info.digitalpoet.auth.domain.service.DigestPasswordManagerService
+import info.digitalpoet.auth.domain.service.RepositoryUserSessionsManagerService
 import info.digitalpoet.auth.domain.service.SimpleUserService
 import info.digitalpoet.auth.domain.service.TokenService
 import info.digitalpoet.auth.domain.service.UserAuthenticationService
+import info.digitalpoet.auth.domain.service.UserSessionsManagerService
 import info.digitalpoet.auth.domain.service.UserService
 import info.digitalpoet.auth.domain.service.UserPolicyValidatorService
 import info.digitalpoet.auth.domain.service.ValidAllUserPolicyValidatorService
@@ -19,7 +21,7 @@ fun serviceModule(): Module
 {
     return module(createdAtStart = true) {
 
-        single<PasswordComparerService> { DigestPasswordComparerService(MessageDigest.getInstance("SHA-512")) }
+        single<PasswordManagerService> { DigestPasswordManagerService(MessageDigest.getInstance("SHA-512")) }
 
         single<TokenService> {
 
@@ -40,7 +42,9 @@ fun serviceModule(): Module
             PolicyUserAuthenticationService(get(), get(), get(), get(), ttl)
         }
 
-        single<UserService> { SimpleUserService(get()) }
+        single<UserSessionsManagerService> { RepositoryUserSessionsManagerService(get()) }
+
+        single<UserService> { SimpleUserService(get(), get()) }
 
         single<UserPolicyValidatorService> { ValidAllUserPolicyValidatorService() }
     }

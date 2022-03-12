@@ -12,7 +12,7 @@ import java.time.Instant
 class PolicyUserAuthenticationService(
     private val userRepository: UserRepository,
     private val authenticationRepository: AuthenticationRepository,
-    private val passwordComparerService: PasswordComparerService,
+    private val passwordManagerService: PasswordManagerService,
     private val userPolicyValidatorService: UserPolicyValidatorService,
     private val jwtTtl: Long
     ): UserAuthenticationService
@@ -25,7 +25,7 @@ class PolicyUserAuthenticationService(
 
         if (!user.isValid()) throw InvalidUser("Invalid userId: ${user.userId}")
 
-        passwordComparerService.validate(user, request.rawPassword)
+        passwordManagerService.validate(user, request.rawPassword)
 
         val scope = buildScope(request.scope)
 

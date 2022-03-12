@@ -4,7 +4,7 @@ import info.digitalpoet.auth.domain.model.User
 import java.security.MessageDigest
 import java.util.Base64
 
-class DigestPasswordComparerService(private val messageDigest: MessageDigest) : PasswordComparerService
+class DigestPasswordManagerService(private val messageDigest: MessageDigest) : PasswordManagerService
 {
     private val encoder = Base64.getEncoder()
 
