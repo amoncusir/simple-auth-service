@@ -1,3 +1,5 @@
+val type_safe: String by project
+val config4k: String by project
 val ktor_version: String by project
 val kotlin_version: String by project
 val koin_version: String by project
@@ -12,6 +14,7 @@ plugins {
 
 group = "info.digitalpoet.auth"
 version = "0.0.1"
+
 application {
     mainClass.set("info.digitalpoet.auth.ApplicationKt")
 
@@ -21,9 +24,14 @@ application {
 
 repositories {
     mavenCentral()
+    google()
 }
 
 dependencies {
+
+    implementation("com.typesafe:config:$type_safe")
+    implementation("io.github.config4k:config4k:$config4k")
+
     // Ktor
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
@@ -37,22 +45,34 @@ dependencies {
     implementation("io.insert-koin:koin-core:$koin_version")
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
-    testImplementation("io.insert-koin:koin-test:$koin_version")
+    testImplementation("io.insert-koin:koin-test-junit5:$koin_version") {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-junit")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-common")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-annotations-common")
+    }
 
     // logback
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     // Kotlin
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    //testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     //JUnit
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junit_version")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junit_version")
 
     // Json Test
-    testImplementation("net.pwall.json:json-kotlin-test:$json_kotlin_test")
+    testImplementation("io.kjson:kjson-test:$json_kotlin_test") {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-junit")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-common")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-annotations-common")
+    }
 }
 
 tasks.test {
     useJUnitPlatform()
+
+    testLogging {
+        showStandardStreams = false
+        events("passed", "skipped", "failed")
+    }
 }
