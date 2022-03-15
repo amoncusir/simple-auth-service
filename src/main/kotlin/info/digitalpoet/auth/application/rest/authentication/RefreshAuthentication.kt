@@ -13,7 +13,7 @@ fun Route.refreshToken() {
     val tokenService by  inject<TokenService>()
     val userAuthenticationService by inject<UserAuthenticationService>()
 
-    get("/refresh/{refreshId}") {
+    get("/{refreshId}") {
 
         val refreshId = call.parameters["refreshId"]!!
 
