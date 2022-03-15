@@ -10,28 +10,29 @@ import io.ktor.application.install
 import io.ktor.server.engine.commandLineEnvironment
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import org.koin.core.logger.Level
 import org.koin.dsl.module
 import org.koin.ktor.ext.Koin
-import org.koin.logger.slf4jLogger
 
 fun main(args: Array<String>)
 {
     embeddedServer(Netty, commandLineEnvironment(args)).start(wait = true)
 }
 
-fun Application.module() {
-
+fun Application.plugins()
+{
     configureSerialization()
     configureSecurity()
     configureRouting()
+}
+
+fun Application.module()
+{
+    plugins()
 
     install(Koin) {
         val ktorModule = module(createdAtStart = true) {
             single { this@module }
         }
-
-        //slf4jLogger(Level.ERROR)
 
         modules(
             ktorModule,

@@ -1,33 +1,27 @@
 package info.digitalpoet.auth
 
-import io.ktor.routing.*
-import io.ktor.http.*
-import io.ktor.auth.*
-import io.ktor.util.*
-import io.ktor.auth.jwt.*
-import com.auth0.jwt.JWT
-import com.auth0.jwt.JWTVerifier
-import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.jackson.*
-import com.fasterxml.jackson.databind.*
-import io.ktor.features.*
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import kotlin.test.*
-import io.ktor.server.testing.*
-import info.digitalpoet.auth.plugins.*
+import io.ktor.application.Application
+import io.ktor.config.ApplicationConfig
+import io.ktor.server.engine.ApplicationEngineEnvironmentBuilder
+import io.ktor.server.engine.applicationEngineEnvironment
+import io.ktor.server.testing.TestApplicationEngine
+import io.ktor.server.testing.withApplication
 
-class ApplicationTest
+fun <R> createTestApplication(
+    moduleFunction: Application.() -> Unit,
+    configure: ApplicationEngineEnvironmentBuilder.() -> Unit = {},
+    test: TestApplicationEngine.() -> R): R
 {
-    @Test
-    fun testRoot()
-    {
-        withTestApplication({ configureRouting() }) {
-            handleRequest(HttpMethod.Get, "/").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals("Hello World!", response.content)
-            }
-        }
+    return withApplication(applicationEngineEnvironment(configure)) {
+        moduleFunction(application)
+        test()
     }
+}
+
+fun <R> createTestApplicationWithConfig(
+    applicationConfig: ApplicationConfig,
+    moduleFunction: Application.() -> Unit,
+    test: TestApplicationEngine.() -> R): R
+{
+    return createTestApplication(moduleFunction, { config = applicationConfig }, test)
 }

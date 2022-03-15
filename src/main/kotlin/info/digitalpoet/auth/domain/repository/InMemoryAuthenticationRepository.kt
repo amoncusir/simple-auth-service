@@ -34,4 +34,8 @@ class InMemoryAuthenticationRepository: AuthenticationRepository
             .map { it.value }
             .filter { it.user.userId == userId }
     }
+
+    fun clear() {
+        cache.clear()
+    }
 }

@@ -31,7 +31,7 @@ fun BasicAuthentication.toDomain(clientId: String, ttl: Long): UserAuthenticatio
 
 fun Route.basicRequestAuthentication() {
 
-    val tokenService by  inject<TokenService>()
+    val tokenService by inject<TokenService>()
     val userAuthenticationService by inject<UserAuthenticationService>()
 
     val ttl = application.environment.config.property("jwt.ttl").getString().toLong()

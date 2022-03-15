@@ -2,7 +2,7 @@ package info.digitalpoet.auth.domain.repository
 
 import info.digitalpoet.auth.domain.model.User
 
-class InMemoryUserRepository(userList: List<User>): UserRepository
+class InMemoryUserRepository(userList: List<User> = listOf()): UserRepository
 {
     private val cache: HashMap<String, User> = userList
         .map { it.userId to it }
@@ -36,5 +36,9 @@ class InMemoryUserRepository(userList: List<User>): UserRepository
     override fun delete(id: String): User
     {
         return cache.remove(id) ?: throw NotFoundEntity(id, "User")
+    }
+
+    fun clear() {
+        cache.clear()
     }
 }
