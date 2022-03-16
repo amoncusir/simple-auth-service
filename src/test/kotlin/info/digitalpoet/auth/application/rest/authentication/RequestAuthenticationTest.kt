@@ -1,6 +1,7 @@
 package info.digitalpoet.auth.application.rest.authentication
 
 import com.typesafe.config.ConfigFactory
+import info.digitalpoet.auth.ApplicationEngineTest
 import info.digitalpoet.auth.application.rest.restTesting
 import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.service.UserService
@@ -12,26 +13,27 @@ import io.ktor.http.formUrlEncode
 import io.ktor.server.testing.handleRequest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.koin.ktor.ext.inject
+import org.koin.ktor.ext.get
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class RequestAuthenticationTest
+class RequestAuthenticationTest: ApplicationEngineTest()
 {
+    override val engine = createTestApplicationWithConfig(HoconApplicationConfig(ConfigFactory.load("test.conf"))) {
+
+        restTesting()
+
+        get<UserService>().apply {
+            createUser(UserService.CreateUser("test@test.test", "test"))
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(booleans = [true, false])
     fun `authenticate user in get query parameters`(requestRefreshToken: Boolean = false)
     {
-        createTestApplicationWithConfig(
-            HoconApplicationConfig(ConfigFactory.load("test.conf")), {
-                restTesting()
-
-                val userService by inject<UserService>()
-
-                userService.createUser(UserService.CreateUser("test@test.test", "test"))
-            }
-        ) {
+        engine.apply {
             val queryParams = mutableListOf<Pair<String, String?>>(
                 "email" to "test@test.test",
                 "password" to "test",
