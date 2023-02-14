@@ -1,6 +1,8 @@
-package info.digitalpoet.auth.domain.repository
+package info.digitalpoet.auth.domain.repository.memory
 
 import info.digitalpoet.auth.domain.model.Authentication
+import info.digitalpoet.auth.domain.repository.AuthenticationRepository
+import info.digitalpoet.auth.domain.repository.NotFoundEntity
 
 class InMemoryAuthenticationRepository: AuthenticationRepository
 {

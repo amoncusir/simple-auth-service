@@ -1,14 +1,17 @@
 package info.digitalpoet.auth.plugins
 
+
 import com.fasterxml.jackson.databind.SerializationFeature
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.features.ContentNegotiation
-import io.ktor.jackson.jackson
+import io.ktor.serialization.jackson.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.contentnegotiation.*
 
 fun Application.configureSerialization()
 {
     install(ContentNegotiation) {
+
+        checkAcceptHeaderCompliance = true
+
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
         }

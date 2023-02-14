@@ -4,13 +4,14 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import info.digitalpoet.auth.domain.entity.Token
 import info.digitalpoet.auth.domain.model.AuthenticationScope
-import io.ktor.application.Application
-import io.ktor.auth.authentication
-import io.ktor.auth.jwt.JWTCredential
-import io.ktor.auth.jwt.jwt
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.plugins.hsts.*
+import io.ktor.server.response.*
 
-fun Application.configureSecurity()
-{
+fun Application.configureSecurity() {
     val jwtConfiguration = environment.config.config("jwt")
 
     authentication {
@@ -38,12 +39,19 @@ fun Application.configureSecurity()
             validate { credential ->
                 if (credential.subject.isNullOrBlank()) null else mapCredentialToToken(credential)
             }
+
+            challenge { _, _ ->
+                call.respond(HttpStatusCode.Unauthorized, "Invalid Token")
+            }
         }
+    }
+
+    install(HSTS) {
+        includeSubDomains = true
     }
 }
 
-private fun mapCredentialToToken(credential: JWTCredential): Token
-{
+private fun mapCredentialToToken(credential: JWTCredential): Token {
     val mapScope = credential.getClaim("scope", HashMap::class)!!
 
     val scope = mapScope

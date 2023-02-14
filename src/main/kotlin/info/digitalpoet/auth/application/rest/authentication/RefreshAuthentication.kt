@@ -2,10 +2,9 @@ package info.digitalpoet.auth.application.rest.authentication
 
 import info.digitalpoet.auth.domain.service.TokenService
 import info.digitalpoet.auth.domain.service.UserAuthenticationService
-import io.ktor.application.call
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
 fun Route.refreshToken() {

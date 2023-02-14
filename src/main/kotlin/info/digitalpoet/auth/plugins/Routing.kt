@@ -1,12 +1,8 @@
 package info.digitalpoet.auth.plugins
 
 import info.digitalpoet.auth.application.rest.registerControllers
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.features.CORS
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.routing.routing
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 
 fun Application.configureRouting()
 {

@@ -1,18 +1,11 @@
 package info.digitalpoet.auth.module
 
-import info.digitalpoet.auth.domain.service.JWTTokenService
-import info.digitalpoet.auth.domain.service.PasswordManagerService
-import info.digitalpoet.auth.domain.service.PolicyUserAuthenticationService
-import info.digitalpoet.auth.domain.service.DigestPasswordManagerService
-import info.digitalpoet.auth.domain.service.RepositoryUserSessionsManagerService
-import info.digitalpoet.auth.domain.service.SimpleUserService
-import info.digitalpoet.auth.domain.service.TokenService
-import info.digitalpoet.auth.domain.service.UserAuthenticationService
-import info.digitalpoet.auth.domain.service.UserSessionsManagerService
-import info.digitalpoet.auth.domain.service.UserService
-import info.digitalpoet.auth.domain.service.UserPolicyValidatorService
-import info.digitalpoet.auth.domain.service.ValidAllUserPolicyValidatorService
-import io.ktor.application.Application
+import info.digitalpoet.auth.domain.cases.password.B64EncodePasswordService
+import info.digitalpoet.auth.domain.cases.password.EncodePasswordUseCase
+import info.digitalpoet.auth.domain.cases.password.ValidatePasswordService
+import info.digitalpoet.auth.domain.cases.password.ValidatePasswordUseCase
+import info.digitalpoet.auth.domain.service.*
+import io.ktor.server.application.*
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import java.security.MessageDigest
@@ -21,7 +14,8 @@ fun serviceModule(): Module
 {
     return module(createdAtStart = true) {
 
-        single<PasswordManagerService> { DigestPasswordManagerService(MessageDigest.getInstance("SHA-512")) }
+        single<EncodePasswordUseCase> { B64EncodePasswordService(MessageDigest.getInstance("SHA-512")) }
+        single<ValidatePasswordUseCase> { ValidatePasswordService(get()) }
 
         single<TokenService> {
 

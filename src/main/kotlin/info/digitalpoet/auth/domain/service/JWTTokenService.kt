@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import info.digitalpoet.auth.domain.model.Authentication
 import java.time.Instant
-import java.util.Date
+import java.util.*
 
 class JWTTokenService(
     private val configuration: Configuration

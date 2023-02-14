@@ -1,5 +1,6 @@
 package info.digitalpoet.auth.domain.service
 
+import info.digitalpoet.auth.domain.cases.password.ValidatePasswordUseCase
 import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.model.AuthenticationScope
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
@@ -12,12 +13,12 @@ import java.time.Instant
 class PolicyUserAuthenticationService(
     private val userRepository: UserRepository,
     private val authenticationRepository: AuthenticationRepository,
-    private val passwordManagerService: PasswordManagerService,
+    private val validatePassword: ValidatePasswordUseCase,
     private val userPolicyValidatorService: UserPolicyValidatorService,
     private val jwtTtl: Long
     ): UserAuthenticationService
 {
-    private val messageDigest = MessageDigest.getInstance("SHA-512")
+    private val messageDigest = MessageDigest.getInstance("SHA-256")
 
     override fun authenticateUser(request: UserAuthenticationService.AuthenticationRequest): Authentication
     {
@@ -25,7 +26,7 @@ class PolicyUserAuthenticationService(
 
         if (!user.isValid()) throw InvalidUser("Invalid userId: ${user.userId}")
 
-        passwordManagerService.validate(user, request.rawPassword)
+        validatePassword(user, request.rawPassword)
 
         val scope = buildScope(request.scope)
 
@@ -60,7 +61,6 @@ class PolicyUserAuthenticationService(
     }
 
     private fun generateRefreshToken(): String {
-        // TODO: Check the security of random ID algorithm!
         val randomId = ID.random()
         val digest = messageDigest.digest(randomId.encodeToByteArray())
         return digest.toHex()

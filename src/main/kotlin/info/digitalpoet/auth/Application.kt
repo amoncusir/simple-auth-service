@@ -5,13 +5,11 @@ import info.digitalpoet.auth.module.serviceModule
 import info.digitalpoet.auth.plugins.configureRouting
 import info.digitalpoet.auth.plugins.configureSecurity
 import info.digitalpoet.auth.plugins.configureSerialization
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.server.engine.commandLineEnvironment
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import org.koin.dsl.module
-import org.koin.ktor.ext.Koin
+import org.koin.ktor.plugin.Koin
 
 fun main(args: Array<String>)
 {
@@ -27,11 +25,13 @@ fun Application.plugins()
 
 fun Application.module()
 {
+    val applicationModule = this
+
     plugins()
 
     install(Koin) {
         val ktorModule = module(createdAtStart = true) {
-            single { this@module }
+            single<Application> { applicationModule }
         }
 
         modules(

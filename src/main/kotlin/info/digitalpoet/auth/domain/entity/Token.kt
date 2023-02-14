@@ -1,7 +1,7 @@
 package info.digitalpoet.auth.domain.entity
 
 import info.digitalpoet.auth.domain.model.AuthenticationScope
-import io.ktor.auth.Principal
+import io.ktor.server.auth.*
 import java.time.Instant
 
 data class Token(

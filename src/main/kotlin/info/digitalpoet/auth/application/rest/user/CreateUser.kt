@@ -1,11 +1,10 @@
 package info.digitalpoet.auth.application.rest.user
 
 import info.digitalpoet.auth.domain.service.UserService
-import io.ktor.application.call
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.post
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
 fun Route.createUser() {

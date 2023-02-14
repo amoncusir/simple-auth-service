@@ -1,7 +1,7 @@
 package info.digitalpoet.auth.application.rest.user
 
-import io.ktor.routing.Route
-import io.ktor.routing.route
+import io.ktor.server.routing.*
+
 
 fun Route.userRoutes() {
 

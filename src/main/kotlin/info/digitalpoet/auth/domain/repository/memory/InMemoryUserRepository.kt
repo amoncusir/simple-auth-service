@@ -1,6 +1,8 @@
-package info.digitalpoet.auth.domain.repository
+package info.digitalpoet.auth.domain.repository.memory
 
 import info.digitalpoet.auth.domain.model.User
+import info.digitalpoet.auth.domain.repository.NotFoundEntity
+import info.digitalpoet.auth.domain.repository.UserRepository
 
 class InMemoryUserRepository(userList: List<User> = listOf()): UserRepository
 {

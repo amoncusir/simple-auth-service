@@ -1,8 +1,7 @@
 package info.digitalpoet.auth
 
-import io.ktor.application.Application
-import io.ktor.config.ApplicationConfig
-import io.ktor.config.MapApplicationConfig
+import io.ktor.server.application.*
+import io.ktor.server.config.*
 import io.ktor.server.engine.ApplicationEngineEnvironment
 import io.ktor.server.engine.ApplicationEngineEnvironmentBuilder
 import io.ktor.server.engine.applicationEngineEnvironment

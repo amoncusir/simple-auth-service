@@ -1,5 +1,6 @@
 package info.digitalpoet.auth.domain.service
 
+import info.digitalpoet.auth.domain.cases.password.EncodePasswordUseCase
 import info.digitalpoet.auth.domain.model.Policy
 import info.digitalpoet.auth.domain.model.PolicyEffect
 import info.digitalpoet.auth.domain.model.User
@@ -8,7 +9,7 @@ import info.digitalpoet.auth.utils.ID
 
 class SimpleUserService(
     private val userRepository: UserRepository,
-    private val passwordManagerService: PasswordManagerService
+    private val encodePassword: EncodePasswordUseCase
 ): UserService
 {
     companion object {
@@ -22,7 +23,7 @@ class SimpleUserService(
 
     override fun createUser(create: UserService.CreateUser): User
     {
-        val hashedPassword = passwordManagerService.encode(create.plainPassword)
+        val hashedPassword = encodePassword(create.plainPassword)
         val user = User(ID.random(), create.email, hashedPassword, true, DEFAULT_POLICY)
 
         return userRepository.save(user)
