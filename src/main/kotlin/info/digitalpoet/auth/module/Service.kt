@@ -1,21 +1,19 @@
 package info.digitalpoet.auth.module
 
-import info.digitalpoet.auth.domain.cases.password.B64EncodePasswordService
-import info.digitalpoet.auth.domain.cases.password.EncodePasswordUseCase
-import info.digitalpoet.auth.domain.cases.password.ValidatePasswordService
-import info.digitalpoet.auth.domain.cases.password.ValidatePasswordUseCase
+import de.mkammerer.argon2.Argon2Factory
+import info.digitalpoet.auth.domain.cases.password.*
 import info.digitalpoet.auth.domain.service.*
 import io.ktor.server.application.*
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import java.security.MessageDigest
 
 fun serviceModule(): Module
 {
     return module(createdAtStart = true) {
 
-        single<EncodePasswordUseCase> { B64EncodePasswordService(MessageDigest.getInstance("SHA-512")) }
-        single<ValidatePasswordUseCase> { ValidatePasswordService(get()) }
+        single { Argon2Wrapper(Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, 32, 128), iterations = 27) }
+        single<EncodePasswordUseCase> { Argon2EncodePasswordService(get()) }
+        single<ValidatePasswordUseCase> { Argon2ValidatePasswordService(get()) }
 
         single<TokenService> {
 

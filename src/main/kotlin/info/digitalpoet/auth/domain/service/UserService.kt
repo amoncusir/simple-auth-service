@@ -6,9 +6,9 @@ interface UserService
 {
     fun getUserById(userId: String): User
 
-    data class CreateUser(
+    class CreateUser(
         val email: String,
-        val plainPassword: String
+        val plainPassword: CharArray
     )
 
     fun createUser(create: CreateUser): User

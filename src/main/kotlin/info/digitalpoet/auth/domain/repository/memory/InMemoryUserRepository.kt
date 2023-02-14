@@ -21,7 +21,7 @@ class InMemoryUserRepository(userList: List<User> = listOf()): UserRepository
     override fun save(entity: User): User
     {
         val copy = entity.copy()
-        cache[entity.userId] = copy
+        cache[copy.userId] = copy
         return copy
     }
 

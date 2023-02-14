@@ -2,7 +2,9 @@ package info.digitalpoet.auth.domain.repository.memory
 
 import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
+import info.digitalpoet.auth.domain.repository.InvalidAuthentication
 import info.digitalpoet.auth.domain.repository.NotFoundEntity
+import java.time.Instant
 
 class InMemoryAuthenticationRepository: AuthenticationRepository
 {
@@ -10,7 +12,10 @@ class InMemoryAuthenticationRepository: AuthenticationRepository
 
     override fun save(authentication: Authentication): Authentication
     {
-        cache[authentication.refreshId!!] = authentication.copy()
+        if (authentication.refreshId == null)
+            throw InvalidAuthentication("Only can save authentication with refreshId!")
+
+        cache[authentication.refreshId] = authentication.copy()
 
         return authentication
     }
@@ -31,10 +36,16 @@ class InMemoryAuthenticationRepository: AuthenticationRepository
 
     override fun findByUserId(userId: String): List<Authentication>
     {
-        return cache
+        val now = Instant.now()
+        val auths = cache
             .entries
             .map { it.value }
             .filter { it.user.userId == userId }
+
+        auths.filter { it.ttl.isAfter(now) }
+            .forEach { delete(it.refreshId!!) }
+
+        return auths.filter { !it.ttl.isAfter(now) }
     }
 
     fun clear() {

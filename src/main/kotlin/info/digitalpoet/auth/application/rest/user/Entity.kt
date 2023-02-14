@@ -13,9 +13,9 @@ data class UserResponse(
 
 fun User.toResponse() = UserResponse(userId, email, policies)
 
-data class UserRequest(
+class UserRequest(
     val email: String,
-    val password: String
+    val password: CharArray
 )
 
 data class AuthenticationResponse(

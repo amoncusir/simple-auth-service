@@ -8,9 +8,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-data class BasicAuthentication(
+class BasicAuthentication(
     val email: String,
-    val password: String,
+    val password: CharArray,
     val scope: Map<String, List<String>>,
     val refresh: Boolean = false,
 )
@@ -40,7 +40,7 @@ fun Route.basicRequestAuthentication() {
 
         val request = UserAuthenticationService.AuthenticationRequest(
             parameters["email"]!!,
-            parameters["password"]!!,
+            parameters["password"]!!.toCharArray(),
             scope,
             call.parameters["clientId"]!!,
             ttl,

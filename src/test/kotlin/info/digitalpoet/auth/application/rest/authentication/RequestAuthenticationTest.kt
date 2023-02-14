@@ -24,7 +24,7 @@ class RequestAuthenticationTest: ApplicationEngineTest()
         module()
 
         get<UserService>().apply {
-            createUser(UserService.CreateUser("test@test.test", "test"))
+            createUser(UserService.CreateUser("test@test.test", "test".toCharArray()))
         }
     }
 

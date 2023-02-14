@@ -7,6 +7,7 @@ val koin_test_version: String by project
 val logback_version: String by project
 val junit_version: String by project
 val json_kotlin_test: String by project
+val argon2_version: String by project
 
 plugins {
     application
@@ -32,6 +33,9 @@ dependencies {
 
     implementation("com.typesafe:config:$type_safe")
     implementation("io.github.config4k:config4k:$config4k")
+
+    // Argon2 password hash
+    implementation("de.mkammerer:argon2-jvm:$argon2_version")
 
     // Ktor
     implementation("io.ktor:ktor-server-core:$ktor_version")

@@ -4,9 +4,9 @@ import info.digitalpoet.auth.domain.model.Authentication
 
 interface UserAuthenticationService
 {
-    data class AuthenticationRequest(
+    class AuthenticationRequest(
         val email: String,
-        val rawPassword: String,
+        val rawPassword: CharArray,
         val scope: Map<String, List<String>>,
         val clientId: String,
         val ttl: Long,
