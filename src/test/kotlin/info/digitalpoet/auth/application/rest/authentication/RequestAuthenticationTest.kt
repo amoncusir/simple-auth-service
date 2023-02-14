@@ -96,6 +96,28 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                 }
         }
     }
+    @Test
+    fun `failed authentication must return unauthorized error code`()
+    {
+        engine.apply {
+            handleRequest(HttpMethod.Post, "/authentication/testClient/basic") {
+                setBody("""
+                    {
+                        "email" : "test@test.test",
+                        "password" : "invalid_password",
+                        "scope" : { "auth": ["*"] },
+                        "refresh" : "false"
+                    }
+                """.trimIndent())
+
+                addHeader("Content-Type", "application/json; charset=utf-8")
+            }
+                .apply {
+                    assertEquals(HttpStatusCode.Unauthorized, response.status())
+                    assertNotNull(response.content)
+                }
+        }
+    }
 
     @Test
     fun `authenticate user in post method with invalid content-type`()
