@@ -12,8 +12,8 @@ fun serviceModule(): Module
     return module(createdAtStart = true) {
 
         single { Argon2Wrapper(Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, 32, 128), iterations = 27) }
-        single<EncodePasswordUseCase> { Argon2EncodePasswordService(get()) }
-        single<ValidatePasswordUseCase> { Argon2ValidatePasswordService(get()) }
+        single<EncodePassword> { Argon2EncodePasswordService(get()) }
+        single<ValidatePassword> { Argon2ValidatePasswordService(get()) }
 
         single<TokenService> {
 

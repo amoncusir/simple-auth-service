@@ -1,6 +1,6 @@
 package info.digitalpoet.auth.domain.service
 
-import info.digitalpoet.auth.domain.cases.password.EncodePasswordUseCase
+import info.digitalpoet.auth.domain.cases.password.EncodePassword
 import info.digitalpoet.auth.domain.model.Policy
 import info.digitalpoet.auth.domain.model.PolicyEffect
 import info.digitalpoet.auth.domain.model.User
@@ -9,7 +9,7 @@ import info.digitalpoet.auth.utils.ID
 
 class SimpleUserService(
     private val userRepository: UserRepository,
-    private val encodePassword: EncodePasswordUseCase
+    private val encodePassword: EncodePassword
 ): UserService
 {
     companion object {

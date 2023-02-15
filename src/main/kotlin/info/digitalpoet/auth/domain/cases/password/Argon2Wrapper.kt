@@ -9,7 +9,6 @@ class Argon2Wrapper(
     private val parallelism: Int = 4,
     private val iterations: Int = Argon2Helper.findIterations(argon, 2000, memory, parallelism)
 ) {
-
     private val charset = Charsets.UTF_8
 
     fun hash(password: CharArray): String

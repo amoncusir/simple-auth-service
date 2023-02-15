@@ -1,6 +1,6 @@
 package info.digitalpoet.auth.domain.service
 
-import info.digitalpoet.auth.domain.cases.password.ValidatePasswordUseCase
+import info.digitalpoet.auth.domain.cases.password.ValidatePassword
 import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.model.AuthenticationScope
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
@@ -13,7 +13,7 @@ import java.time.Instant
 class PolicyUserAuthenticationService(
     private val userRepository: UserRepository,
     private val authenticationRepository: AuthenticationRepository,
-    private val validatePassword: ValidatePasswordUseCase,
+    private val validatePassword: ValidatePassword,
     private val userPolicyValidatorService: UserPolicyValidatorService,
     private val jwtTtl: Long
     ): UserAuthenticationService
