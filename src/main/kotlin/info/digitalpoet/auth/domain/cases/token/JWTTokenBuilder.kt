@@ -1,4 +1,4 @@
-package info.digitalpoet.auth.domain.service
+package info.digitalpoet.auth.domain.cases.token
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -6,9 +6,9 @@ import info.digitalpoet.auth.domain.model.Authentication
 import java.time.Instant
 import java.util.*
 
-class JWTTokenService(
+class JWTTokenBuilder(
     private val configuration: Configuration
-): TokenService
+): TokenBuilder
 {
     data class Configuration(
         val secret: String,
@@ -17,7 +17,7 @@ class JWTTokenService(
         val ttl: Long,
     )
 
-    override fun buildToken(authentication: Authentication): TokenService.TokenResponse
+    override operator fun invoke(authentication: Authentication): TokenBuilder.TokenResponse
     {
         val now = Instant.now()
 
@@ -31,6 +31,6 @@ class JWTTokenService(
             .withClaim("scope", authentication.scope.associate { it.service to it.grant })
             .sign(Algorithm.HMAC512(configuration.secret))
 
-        return TokenService.TokenResponse(token, authentication.refreshId)
+        return TokenBuilder.TokenResponse(token, authentication.refreshId)
     }
 }

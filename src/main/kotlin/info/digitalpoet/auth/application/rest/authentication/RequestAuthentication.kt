@@ -1,7 +1,6 @@
 package info.digitalpoet.auth.application.rest.authentication
 
-import info.digitalpoet.auth.domain.cases.tracer.LogTrace
-import info.digitalpoet.auth.domain.service.TokenService
+import info.digitalpoet.auth.domain.cases.token.TokenBuilder
 import info.digitalpoet.auth.domain.service.UserAuthenticationService
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -29,8 +28,7 @@ fun BasicAuthentication.toDomain(clientId: String, ttl: Long): UserAuthenticatio
 
 fun Route.basicRequestAuthentication() {
 
-    val log by inject<LogTrace>()
-    val tokenService by inject<TokenService>()
+    val tokenBuilder by inject<TokenBuilder>()
     val userAuthenticationService by inject<UserAuthenticationService>()
 
     val ttl = application.environment.config.property("jwt.ttl").getString().toLong()
@@ -50,10 +48,7 @@ fun Route.basicRequestAuthentication() {
         )
 
         val authentication = userAuthenticationService.authenticateUser(request)
-        val response = tokenService.buildToken(authentication)
-
-        log.low("authorization_success", "Granted authorization to user ${authentication.user.userId}",
-            authentication, response)
+        val response = tokenBuilder(authentication)
 
         call.respond(hashMapOf("tokens" to response))
     }
@@ -63,7 +58,7 @@ fun Route.basicRequestAuthentication() {
         val clientId = call.parameters["clientId"]!!
 
         val authentication = userAuthenticationService.authenticateUser(basicAuth.toDomain(clientId, ttl))
-        val response = tokenService.buildToken(authentication)
+        val response = tokenBuilder(authentication)
 
         call.respond(hashMapOf("tokens" to response))
     }

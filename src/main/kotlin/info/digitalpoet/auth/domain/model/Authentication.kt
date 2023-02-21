@@ -12,11 +12,14 @@ data class Authentication(
     val user: User,
     /**
      * User scope list. Define the user's access over services. Example:
+     * ```json4
      * [
      *   { service: '*', grant: 'read' }, // Can read all services
      *   { service: 'admin', grant: 'update' }, // Can update admin service
+     *   { service: 'admin', grant: ['read', 'update'] }, // Can update admin service
      *   { service: 'photos', grant: '*' }, // Can do anything on photos service
      * ]
+     * ```
      */
     val scope: List<AuthenticationScope>,
     /** ID of the client that request the authentication */

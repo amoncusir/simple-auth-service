@@ -1,6 +1,7 @@
 package info.digitalpoet.auth.domain.service
 
 import info.digitalpoet.auth.domain.cases.password.ValidatePassword
+import info.digitalpoet.auth.domain.cases.tracer.EventPublisher
 import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.model.AuthenticationScope
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
@@ -15,6 +16,7 @@ class PolicyUserAuthenticationService(
     private val authenticationRepository: AuthenticationRepository,
     private val validatePassword: ValidatePassword,
     private val userPolicyValidatorService: UserPolicyValidatorService,
+    private val eventPublisher: EventPublisher,
     private val jwtTtl: Long
     ): UserAuthenticationService
 {
@@ -42,6 +44,8 @@ class PolicyUserAuthenticationService(
 
         if (request.withRefresh) authenticationRepository.save(auth)
 
+        eventPublisher("login.success", mapOf("from" to request, "auth" to auth))
+
         return auth
     }
 
@@ -56,6 +60,8 @@ class PolicyUserAuthenticationService(
         val newAuth = authentication.newAuth(refreshId = generateRefreshToken(), Instant.now().plusSeconds(jwtTtl))
 
         authenticationRepository.save(newAuth)
+
+        eventPublisher("refresh.success", mapOf("from" to refreshId, "auth" to newAuth))
 
         return newAuth
     }
