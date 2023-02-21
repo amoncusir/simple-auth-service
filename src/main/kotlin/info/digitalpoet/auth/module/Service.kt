@@ -4,6 +4,10 @@ import de.mkammerer.argon2.Argon2Factory
 import info.digitalpoet.auth.domain.command.password.*
 import info.digitalpoet.auth.domain.command.token.JWTTokenBuilder
 import info.digitalpoet.auth.domain.command.token.TokenBuilder
+import info.digitalpoet.auth.domain.command.user.CreateUser
+import info.digitalpoet.auth.domain.command.user.CreateUserSelfPolicy
+import info.digitalpoet.auth.domain.command.user.GetUserByToken
+import info.digitalpoet.auth.domain.command.user.SimpleRepositoryGetUserByToken
 import info.digitalpoet.auth.domain.service.*
 import io.ktor.server.application.*
 import org.koin.core.module.Module
@@ -38,7 +42,8 @@ fun serviceModule(): Module
 
         single<UserSessionsManagerService> { RepositoryUserSessionsManagerService(get()) }
 
-        single<UserService> { SimpleUserService(get(), get()) }
+        single<CreateUser> { CreateUserSelfPolicy(get(), get()) }
+        single<GetUserByToken> { SimpleRepositoryGetUserByToken(get()) }
 
         single<UserPolicyValidatorService> { ValidAllUserPolicyValidatorService() }
     }

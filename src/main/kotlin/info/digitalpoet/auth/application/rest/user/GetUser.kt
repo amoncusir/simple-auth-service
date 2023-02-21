@@ -1,8 +1,7 @@
 package info.digitalpoet.auth.application.rest.user
 
-import info.digitalpoet.auth.application.rest.UnauthorizedPetition
+import info.digitalpoet.auth.domain.command.user.GetUserByToken
 import info.digitalpoet.auth.domain.entity.Token
-import info.digitalpoet.auth.domain.service.UserService
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
@@ -11,11 +10,11 @@ import org.koin.ktor.ext.inject
 
 fun Route.getUser() {
 
-    val userFinder by inject<UserService>()
+    val userFinder by inject<GetUserByToken>()
 
     get {
-        val token = call.principal<Token>() ?: throw UnauthorizedPetition()
-        val user = userFinder.getUserById(token.userId)
+        val token = call.principal<Token>()!!
+        val user = userFinder(token)
 
         call.respond(hashMapOf("user" to user.toResponse()))
     }

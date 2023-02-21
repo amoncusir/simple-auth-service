@@ -1,7 +1,6 @@
 package info.digitalpoet.auth.application.rest.user
 
 import info.digitalpoet.auth.domain.command.user.CreateUser
-import info.digitalpoet.auth.domain.service.UserService
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
