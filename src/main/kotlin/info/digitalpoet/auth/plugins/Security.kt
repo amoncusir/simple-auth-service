@@ -15,39 +15,87 @@ fun Application.configureSecurity() {
     val jwtConfiguration = environment.config.config("jwt")
 
     authentication {
-        jwt {
 
-            val secret = jwtConfiguration.property("secret").getString()
-            val issuer = jwtConfiguration.property("issuer").getString()
-            val audience = jwtConfiguration.property("audience").getString()
+        val issuer = jwtConfiguration.property("issuer").getString()
+        val audience = jwtConfiguration.property("audience").getString()
+        val ownRealm = jwtConfiguration.property("realm").getString()
 
-            realm = jwtConfiguration.property("realm").getString()
+        jwtAuthentication(
+            name = "self",
+            secret = jwtConfiguration.property("secret").getString(),
+            issuer = issuer,
+            audience = audience,
+            ownRealm = ownRealm,
+            validateFun = tokenValidationForGrants(audience, "self")
+        )
 
-            verifier {
-                JWT
-                    .require(Algorithm.HMAC512(secret))
-                    .withAudience(audience)
-                    .withIssuer(issuer)
-                    .withClaimPresence("sub")
-                    .withClaimPresence("iat")
-                    .withClaimPresence("client")
-                    .withClaimPresence("scope")
-                    .acceptLeeway(2)
-                    .build()
+        jwtAuthentication(
+            name = "admin",
+            secret = jwtConfiguration.property("secret").getString(),
+            issuer = issuer,
+            audience = audience,
+            ownRealm = ownRealm,
+            validateFun = tokenValidationForGrants(audience, "self")
+        )
+
+        jwtAuthentication(
+            name = "service",
+            secret = jwtConfiguration.property("service-secret").getString(),
+            issuer = issuer,
+            audience = audience,
+            ownRealm = ownRealm,
+            validateFun = { jwtCredential ->
+                if(jwtCredential.subject.isNullOrEmpty()) null else mapCredentialToToken(jwtCredential)
             }
-
-            validate { credential ->
-                if (credential.subject.isNullOrBlank()) null else mapCredentialToToken(credential)
-            }
-
-            challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized, "Invalid Token")
-            }
-        }
+        )
     }
 
     install(HSTS) {
         includeSubDomains = true
+    }
+}
+
+fun tokenValidationForGrants(audience: String, vararg grants: String): suspend ApplicationCall.(JWTCredential) -> Principal?
+{
+    return validation@{credential ->
+                if (credential.subject?.isNotEmpty() == true) {
+                    val token = mapCredentialToToken(credential)
+                    if (token.hasServiceWithGrants(audience, *grants)) token else null
+                } else null
+        }
+}
+
+fun AuthenticationConfig.jwtAuthentication(
+    name: String,
+    secret: String,
+    issuer: String,
+    audience: String,
+    ownRealm: String,
+    validateFun: suspend ApplicationCall.(JWTCredential) -> Principal?
+)
+{
+    jwt(name) {
+
+        realm = ownRealm
+
+        verifier {
+            JWT
+                .require(Algorithm.HMAC512(secret))
+                .withAudience(audience)
+                .withIssuer(issuer)
+                .withClaimPresence("sub")
+                .withClaimPresence("iat")
+                .withClaimPresence("client")
+                .withClaimPresence("scope")
+                .acceptLeeway(2)
+                .build()
+        }
+
+        validate(validateFun)
+
+        challenge { _, _ ->
+            call.respond(HttpStatusCode.Unauthorized, "Invalid Token")
+        }
     }
 }
 

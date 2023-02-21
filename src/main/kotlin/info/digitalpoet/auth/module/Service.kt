@@ -1,9 +1,9 @@
 package info.digitalpoet.auth.module
 
 import de.mkammerer.argon2.Argon2Factory
-import info.digitalpoet.auth.domain.cases.password.*
-import info.digitalpoet.auth.domain.cases.token.JWTTokenBuilder
-import info.digitalpoet.auth.domain.cases.token.TokenBuilder
+import info.digitalpoet.auth.domain.command.password.*
+import info.digitalpoet.auth.domain.command.token.JWTTokenBuilder
+import info.digitalpoet.auth.domain.command.token.TokenBuilder
 import info.digitalpoet.auth.domain.service.*
 import io.ktor.server.application.*
 import org.koin.core.module.Module

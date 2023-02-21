@@ -1,4 +1,4 @@
-package info.digitalpoet.auth.domain.cases.tracer
+package info.digitalpoet.auth.domain.command.tracer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature

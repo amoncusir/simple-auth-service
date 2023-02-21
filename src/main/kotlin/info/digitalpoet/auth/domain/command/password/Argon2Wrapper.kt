@@ -1,4 +1,4 @@
-package info.digitalpoet.auth.domain.cases.password
+package info.digitalpoet.auth.domain.command.password
 
 import de.mkammerer.argon2.Argon2
 import de.mkammerer.argon2.Argon2Helper

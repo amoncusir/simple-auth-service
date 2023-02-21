@@ -1,4 +1,4 @@
-package info.digitalpoet.auth.domain.cases.password
+package info.digitalpoet.auth.domain.command.password
 
 import java.nio.CharBuffer
 import java.security.MessageDigest

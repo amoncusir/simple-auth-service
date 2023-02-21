@@ -1,7 +1,7 @@
 package info.digitalpoet.auth.domain.service
 
-import info.digitalpoet.auth.domain.cases.password.ValidatePassword
-import info.digitalpoet.auth.domain.cases.tracer.EventPublisher
+import info.digitalpoet.auth.domain.command.password.ValidatePassword
+import info.digitalpoet.auth.domain.command.tracer.EventPublisher
 import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.model.AuthenticationScope
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository

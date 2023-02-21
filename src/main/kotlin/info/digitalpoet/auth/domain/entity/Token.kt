@@ -12,3 +12,14 @@ data class Token(
     /** Time to live: Date unit the token was valid */
     val ttl: Instant,
 ): Principal
+{
+    fun hasService(service: String): Boolean {
+        return scope.any { it.service == service }
+    }
+
+    fun hasServiceWithGrants(service: String, vararg grant: String): Boolean {
+        return scope.firstOrNull() { it.service == service }
+            ?.grant
+            ?.containsAll(grant.asList()) ?: false
+    }
+}
