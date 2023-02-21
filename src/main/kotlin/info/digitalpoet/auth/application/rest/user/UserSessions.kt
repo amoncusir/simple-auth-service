@@ -13,18 +13,20 @@ fun Route.userSessions() {
 
     val userSessionsManagerService by inject<UserSessionsManagerService>()
 
-    delete("/invalidate") {
-        val token = call.principal<Token>() ?: throw UnauthorizedPetition()
+    route("user/sessions") {
+        delete("/invalidate") {
+            val token = call.principal<Token>() ?: throw UnauthorizedPetition()
 
-        userSessionsManagerService.invalidateRefreshTokens(token.userId)
-    }
+            userSessionsManagerService.invalidateRefreshTokens(token.userId)
+        }
 
-    get {
-        val token = call.principal<Token>() ?: throw UnauthorizedPetition()
+        get {
+            val token = call.principal<Token>() ?: throw UnauthorizedPetition()
 
-        val authentications = userSessionsManagerService.findActiveAuthentications(token.userId)
-            .map { it.toResponse() }
+            val authentications = userSessionsManagerService.findActiveAuthentications(token.userId)
+                .map { it.toResponse() }
 
-        call.respond(hashMapOf("authentications" to authentications))
+            call.respond(hashMapOf("authentications" to authentications))
+        }
     }
 }

@@ -2,6 +2,7 @@ package info.digitalpoet.auth.application.rest.user
 
 import info.digitalpoet.auth.domain.command.user.CreateUser
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -9,13 +10,16 @@ import org.koin.ktor.ext.inject
 
 fun Route.createUser() {
 
-    val createUser by inject<CreateUser>()
+    authenticate("admin") {
 
-    post {
-        val userRequest: UserRequest = call.receive()
+        val createUser by inject<CreateUser>()
 
-        val user = createUser(CreateUser.Request(userRequest.email, userRequest.password))
+        post {
+            val userRequest: UserRequest = call.receive()
 
-        call.respond(hashMapOf("user" to user.toResponse()))
+            val user = createUser(CreateUser.Request(userRequest.email, userRequest.password))
+
+            call.respond(hashMapOf("user" to user.toResponse()))
+        }
     }
 }

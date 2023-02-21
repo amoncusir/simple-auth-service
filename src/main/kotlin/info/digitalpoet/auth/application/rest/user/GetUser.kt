@@ -12,7 +12,7 @@ fun Route.getUser() {
 
     val userFinder by inject<GetUserByToken>()
 
-    get {
+    get("/user") {
         val token = call.principal<Token>()!!
         val user = userFinder(token)
 

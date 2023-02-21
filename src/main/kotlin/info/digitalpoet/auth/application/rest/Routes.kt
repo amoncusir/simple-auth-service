@@ -7,9 +7,7 @@ import io.ktor.server.routing.*
 
 fun Route.registerControllers() {
 
-    route("/user") {
-        userRoutes()
-    }
+    userRoutes()
 
     route("/authentication") {
         authenticationRoutes()
