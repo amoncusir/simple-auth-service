@@ -3,7 +3,7 @@ package info.digitalpoet.auth.application.rest.authentication
 import com.typesafe.config.ConfigFactory
 import info.digitalpoet.auth.ApplicationEngineTest
 import info.digitalpoet.auth.createTestApplicationWithConfig
-import info.digitalpoet.auth.domain.service.UserService
+import info.digitalpoet.auth.domain.command.user.CreateUser
 import info.digitalpoet.auth.module
 import io.kjson.test.JSONExpect.Companion.expectJSON
 import io.ktor.http.*
@@ -23,8 +23,8 @@ class RequestAuthenticationTest: ApplicationEngineTest()
 
         module()
 
-        get<UserService>().apply {
-            createUser(UserService.CreateUser("test@test.test", "test".toCharArray()))
+        get<CreateUser>().apply {
+            this(CreateUser.Request("test@test.test", "test".toCharArray()))
         }
     }
 
