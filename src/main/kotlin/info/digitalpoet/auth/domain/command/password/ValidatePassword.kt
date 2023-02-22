@@ -1,8 +1,8 @@
 package info.digitalpoet.auth.domain.command.password
 
+import info.digitalpoet.auth.domain.InvalidPassword
 import info.digitalpoet.auth.domain.command.tracer.EventPublisher
 import info.digitalpoet.auth.domain.model.User
-import info.digitalpoet.auth.domain.service.InvalidPassword
 
 interface ValidatePassword {
 

@@ -1,7 +1,7 @@
 package info.digitalpoet.auth.application.rest.user
 
 import info.digitalpoet.auth.domain.command.authentication.FindActiveAuthentications
-import info.digitalpoet.auth.domain.command.authentication.InvalidateRefreshTokens
+import info.digitalpoet.auth.domain.command.authentication.InvalidateAuthentication
 import info.digitalpoet.auth.domain.entity.Token
 import info.digitalpoet.auth.domain.values.UserId
 import info.digitalpoet.auth.plugins.authenticateAdmin
@@ -14,7 +14,7 @@ import org.koin.ktor.ext.inject
 
 fun Route.userSessions() {
 
-    val invalidateRefreshTokens by inject<InvalidateRefreshTokens>()
+    val invalidateAuthentication by inject<InvalidateAuthentication>()
     val findActiveAuthentications by inject<FindActiveAuthentications>()
 
     route("user/sessions") {
@@ -22,7 +22,7 @@ fun Route.userSessions() {
             delete("/invalidate") {
                 val token = call.principal<Token>()!!
 
-                invalidateRefreshTokens(token.userId)
+                invalidateAuthentication(token.userId)
             }
 
             get {
@@ -40,7 +40,7 @@ fun Route.userSessions() {
                 delete("/invalidate") {
                     val userId = call.parameters["userId"]!!
 
-                    invalidateRefreshTokens(UserId(userId))
+                    invalidateAuthentication(UserId(userId))
                 }
 
                 get {

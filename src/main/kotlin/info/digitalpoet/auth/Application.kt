@@ -1,8 +1,8 @@
 package info.digitalpoet.auth
 
+import info.digitalpoet.auth.module.eventsModule
 import info.digitalpoet.auth.module.repositoryModule
 import info.digitalpoet.auth.module.serviceModule
-import info.digitalpoet.auth.module.eventsModule
 import info.digitalpoet.auth.plugins.configureRouting
 import info.digitalpoet.auth.plugins.configureSecurity
 import info.digitalpoet.auth.plugins.configureSerialization

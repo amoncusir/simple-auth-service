@@ -4,6 +4,7 @@ import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
 import info.digitalpoet.auth.domain.repository.InvalidAuthentication
 import info.digitalpoet.auth.domain.repository.NotFoundEntity
+import info.digitalpoet.auth.domain.values.RefreshId
 import info.digitalpoet.auth.domain.values.UserId
 import java.time.Instant
 
@@ -16,21 +17,21 @@ class InMemoryAuthenticationRepository: AuthenticationRepository
         if (authentication.refreshId == null)
             throw InvalidAuthentication("Only can save authentication with refreshId!")
 
-        cache[authentication.refreshId] = authentication.copy()
+        cache[authentication.refreshId.toString()] = authentication.copy()
 
         return authentication
     }
 
-    override fun delete(refreshId: String): Authentication
+    override fun delete(refreshId: RefreshId): Authentication
     {
-        return cache.remove(refreshId) ?: throw NotFoundEntity(refreshId, "Authentication")
+        return cache.remove(refreshId.toString()) ?: throw NotFoundEntity(refreshId.toString(), "Authentication")
     }
 
     override fun deleteByUserId(userId: UserId): List<Authentication>
     {
         val toRemoveAuth = findByUserId(userId)
 
-        toRemoveAuth.forEach { cache.remove(it.refreshId) }
+        toRemoveAuth.forEach { cache.remove(it.refreshId.toString()) }
 
         return toRemoveAuth
     }

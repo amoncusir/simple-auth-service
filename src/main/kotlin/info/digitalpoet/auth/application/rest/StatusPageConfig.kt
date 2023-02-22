@@ -1,6 +1,6 @@
 package info.digitalpoet.auth.application.rest
 
-import info.digitalpoet.auth.domain.service.InvalidAuthentication
+import info.digitalpoet.auth.domain.InvalidAuthentication
 import io.ktor.http.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*

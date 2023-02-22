@@ -1,15 +1,11 @@
 package info.digitalpoet.auth.module
 
 import de.mkammerer.argon2.Argon2Factory
-import info.digitalpoet.auth.domain.command.authentication.AuthRepositoryFindActiveAuthentications
-import info.digitalpoet.auth.domain.command.authentication.AuthRepositoryInvalidateRefreshTokens
-import info.digitalpoet.auth.domain.command.authentication.FindActiveAuthentications
-import info.digitalpoet.auth.domain.command.authentication.InvalidateRefreshTokens
+import info.digitalpoet.auth.domain.command.authentication.*
 import info.digitalpoet.auth.domain.command.password.*
 import info.digitalpoet.auth.domain.command.token.JWTTokenBuilder
 import info.digitalpoet.auth.domain.command.token.TokenBuilder
 import info.digitalpoet.auth.domain.command.user.*
-import info.digitalpoet.auth.domain.service.*
 import io.ktor.server.application.*
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -35,19 +31,18 @@ fun serviceModule(): Module
             JWTTokenBuilder(configuration)
         }
 
-        single<UserAuthenticationService> {
+        single<AuthenticationIssuer> {
             val ttl = get<Application>().environment.config.property("jwt.ttl").getString().toLong()
-
-            PolicyUserAuthenticationService(get(), get(), get(), get(), get(), ttl)
+            UserPolicyValidatorAuthenticationIssuer(get(), get(), get(), get(), get(), ttl)
         }
 
-        single<InvalidateRefreshTokens> { AuthRepositoryInvalidateRefreshTokens(get()) }
+        single<InvalidateAuthentication> { RepositoryInvalidateAuthentication(get()) }
         single<FindActiveAuthentications> { AuthRepositoryFindActiveAuthentications(get()) }
 
         single<CreateUser> { CreateUserSelfPolicy(get(), get()) }
         single<GetUser> { SimpleRepositoryGetUser(get()) }
         single<UpdateUserPolicies> { RepositoryUpdateUserPolicies(get(), get()) }
 
-        single<UserPolicyValidatorService> { ValidAllUserPolicyValidatorService() }
+        single<PolicyValidator> { ValidAllPolicyValidator() }
     }
 }

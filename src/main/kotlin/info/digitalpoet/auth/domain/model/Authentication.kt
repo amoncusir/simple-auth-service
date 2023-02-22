@@ -1,5 +1,6 @@
 package info.digitalpoet.auth.domain.model
 
+import info.digitalpoet.auth.domain.values.RefreshId
 import java.time.Instant
 
 data class AuthenticationScope(
@@ -30,9 +31,9 @@ data class Authentication(
      * Token refresh ID to request a valid token with the same configuration.
      * If it's null, can't be request a new token.
      */
-    val refreshId: String?
+    val refreshId: RefreshId?
 ) {
-    fun newAuth(refreshId: String?, ttl: Instant): Authentication {
+    fun newAuth(refreshId: RefreshId?, ttl: Instant): Authentication {
         return copy(ttl = ttl, refreshId = refreshId)
     }
 }

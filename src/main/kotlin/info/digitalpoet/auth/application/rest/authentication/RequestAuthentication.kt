@@ -1,7 +1,7 @@
 package info.digitalpoet.auth.application.rest.authentication
 
+import info.digitalpoet.auth.domain.command.authentication.AuthenticationIssuer
 import info.digitalpoet.auth.domain.command.token.TokenBuilder
-import info.digitalpoet.auth.domain.service.UserAuthenticationService
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -15,8 +15,8 @@ class BasicAuthentication(
     val refresh: Boolean = false,
 )
 
-fun BasicAuthentication.toDomain(clientId: String, ttl: Long): UserAuthenticationService.AuthenticationRequest {
-    return UserAuthenticationService.AuthenticationRequest(
+fun BasicAuthentication.toDomain(clientId: String, ttl: Long) =
+    AuthenticationIssuer.Request(
         email,
         password,
         scope,
@@ -24,12 +24,11 @@ fun BasicAuthentication.toDomain(clientId: String, ttl: Long): UserAuthenticatio
         ttl,
         refresh
     )
-}
 
 fun Route.basicRequestAuthentication() {
 
     val tokenBuilder by inject<TokenBuilder>()
-    val userAuthenticationService by inject<UserAuthenticationService>()
+    val authenticationIssuer by inject<AuthenticationIssuer>()
 
     val ttl = application.environment.config.property("jwt.ttl").getString().toLong()
 
@@ -39,7 +38,7 @@ fun Route.basicRequestAuthentication() {
 
             val scope = parameters.getAll("scope")!!.associateWith { listOf("*") }
 
-            val request = UserAuthenticationService.AuthenticationRequest(
+            val request = AuthenticationIssuer.Request(
                 parameters["email"]!!,
                 parameters["password"]!!.toCharArray(),
                 scope,
@@ -48,7 +47,7 @@ fun Route.basicRequestAuthentication() {
                 parameters.contains("refresh"),
             )
 
-            val authentication = userAuthenticationService.authenticateUser(request)
+            val authentication = authenticationIssuer(request)
             val response = tokenBuilder(authentication)
 
             call.respond(hashMapOf("tokens" to response))
@@ -58,7 +57,7 @@ fun Route.basicRequestAuthentication() {
             val basicAuth: BasicAuthentication = call.receive()
             val clientId = call.parameters["clientId"]!!
 
-            val authentication = userAuthenticationService.authenticateUser(basicAuth.toDomain(clientId, ttl))
+            val authentication = authenticationIssuer(basicAuth.toDomain(clientId, ttl))
             val response = tokenBuilder(authentication)
 
             call.respond(hashMapOf("tokens" to response))

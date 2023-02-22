@@ -1,4 +1,4 @@
-package info.digitalpoet.auth.domain.service
+package info.digitalpoet.auth.domain
 
 open class DomainException(message: String? = null, cause: Throwable? = null) : RuntimeException(message, cause)
 
