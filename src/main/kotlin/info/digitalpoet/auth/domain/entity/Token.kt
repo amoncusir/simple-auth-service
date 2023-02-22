@@ -17,9 +17,11 @@ data class Token(
         return scope.any { it.service == service }
     }
 
-    fun hasServiceWithGrants(service: String, vararg grant: String): Boolean {
-        return scope.firstOrNull() { it.service == service }
-            ?.grant
-            ?.containsAll(grant.asList()) ?: false
+    fun hasServiceWithGrants(service: String, vararg grants: String): Boolean {
+        val scopeGrants = scope.firstOrNull { it.service == service }?.grant ?: return false
+
+        if (scopeGrants.any { it == "*" }) return true
+
+        return scopeGrants.containsAll(grants.toList())
     }
 }
