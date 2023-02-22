@@ -11,6 +11,7 @@ fun StatusPagesConfig.errorMapping() {
     exception<InvalidAuthentication> { call, _ -> call.respond(HttpStatusCode.Unauthorized, "Unauthorized") }
 
     exception<Throwable> { call, cause ->
-        call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
+        call.respondText(text = "500", status = HttpStatusCode.InternalServerError)
+        call.application.environment.log.error("Unexpected Error", cause)
     }
 }

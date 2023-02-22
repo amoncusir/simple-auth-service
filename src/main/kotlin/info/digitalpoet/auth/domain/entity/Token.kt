@@ -1,11 +1,12 @@
 package info.digitalpoet.auth.domain.entity
 
 import info.digitalpoet.auth.domain.model.AuthenticationScope
+import info.digitalpoet.auth.domain.values.UserId
 import io.ktor.server.auth.*
 import java.time.Instant
 
 data class Token(
-    val userId: String,
+    val userId: UserId,
     val scope: List<AuthenticationScope>,
     /** ID of the client that request the authentication */
     val client: String,

@@ -11,7 +11,7 @@ data class UserResponse(
     val policies: List<Policy>
 )
 
-fun User.toResponse() = UserResponse(userId, email, policies)
+fun User.toResponse() = UserResponse(userId.toString(), email.toString(), policies)
 
 class UserRequest(
     val email: String,

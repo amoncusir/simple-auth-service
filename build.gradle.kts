@@ -19,9 +19,6 @@ version = "0.0.1"
 
 application {
     mainClass.set("info.digitalpoet.auth.ApplicationKt")
-
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
 repositories {

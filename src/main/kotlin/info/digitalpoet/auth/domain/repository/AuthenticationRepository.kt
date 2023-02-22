@@ -1,6 +1,7 @@
 package info.digitalpoet.auth.domain.repository
 
 import info.digitalpoet.auth.domain.model.Authentication
+import info.digitalpoet.auth.domain.values.UserId
 
 interface AuthenticationRepository
 {
@@ -8,7 +9,7 @@ interface AuthenticationRepository
 
     fun delete(refreshId: String): Authentication
 
-    fun deleteByUserId(userId: String): List<Authentication>
+    fun deleteByUserId(userId: UserId): List<Authentication>
 
-    fun findByUserId(userId: String): List<Authentication>
+    fun findByUserId(userId: UserId): List<Authentication>
 }

@@ -4,12 +4,26 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import info.digitalpoet.auth.domain.entity.Token
 import info.digitalpoet.auth.domain.model.AuthenticationScope
+import info.digitalpoet.auth.domain.values.UserId
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.hsts.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
+
+fun Route.authenticateSelf(build: Route.() -> Unit) = authenticate(
+    "self", strategy = AuthenticationStrategy.Required, build = build
+)
+
+fun Route.authenticateAdmin(build: Route.() -> Unit) = authenticate(
+    "admin", strategy = AuthenticationStrategy.Required, build = build
+)
+
+fun Route.authenticateService(build: Route.() -> Unit) = authenticate(
+    "service", strategy = AuthenticationStrategy.Required, build = build
+)
 
 fun Application.configureSecurity() {
     val jwtConfiguration = environment.config.config("jwt")
@@ -107,7 +121,7 @@ private fun mapCredentialToToken(credential: JWTCredential): Token {
         .map { AuthenticationScope(it.key as String, it.value as List<String>) }
 
     return Token(
-        credential.subject!!,
+        UserId(credential.subject!!),
         scope,
         credential["client"]!!,
         credential.expiresAt!!.toInstant()

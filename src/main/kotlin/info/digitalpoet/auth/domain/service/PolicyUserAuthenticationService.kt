@@ -6,10 +6,11 @@ import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.model.AuthenticationScope
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
 import info.digitalpoet.auth.domain.repository.UserRepository
-import info.digitalpoet.auth.utils.ID
+import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.utils.toHex
 import java.security.MessageDigest
 import java.time.Instant
+import java.util.*
 
 class PolicyUserAuthenticationService(
     private val userRepository: UserRepository,
@@ -24,7 +25,7 @@ class PolicyUserAuthenticationService(
 
     override fun authenticateUser(request: UserAuthenticationService.AuthenticationRequest): Authentication
     {
-        val user = userRepository.findUserByEmail(request.email)
+        val user = userRepository.findUserByEmail(Email(request.email))
 
         if (!user.isValid()) throw InvalidUser("Invalid userId: ${user.userId}")
 
@@ -67,8 +68,8 @@ class PolicyUserAuthenticationService(
     }
 
     private fun generateRefreshToken(): String {
-        val randomId = ID.random()
-        val digest = messageDigest.digest(randomId.encodeToByteArray())
+        val randomId = UUID.randomUUID() // TODO: Use more secure way to generate random IDs
+        val digest = messageDigest.digest(randomId.toString().encodeToByteArray())
         return digest.toHex()
     }
 

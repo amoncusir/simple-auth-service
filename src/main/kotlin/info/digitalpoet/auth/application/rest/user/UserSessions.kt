@@ -1,8 +1,11 @@
 package info.digitalpoet.auth.application.rest.user
 
-import info.digitalpoet.auth.application.rest.UnauthorizedPetition
+import info.digitalpoet.auth.domain.command.authentication.FindActiveAuthentications
+import info.digitalpoet.auth.domain.command.authentication.InvalidateRefreshTokens
 import info.digitalpoet.auth.domain.entity.Token
-import info.digitalpoet.auth.domain.service.UserSessionsManagerService
+import info.digitalpoet.auth.domain.values.UserId
+import info.digitalpoet.auth.plugins.authenticateAdmin
+import info.digitalpoet.auth.plugins.authenticateSelf
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
@@ -11,22 +14,44 @@ import org.koin.ktor.ext.inject
 
 fun Route.userSessions() {
 
-    val userSessionsManagerService by inject<UserSessionsManagerService>()
+    val invalidateRefreshTokens by inject<InvalidateRefreshTokens>()
+    val findActiveAuthentications by inject<FindActiveAuthentications>()
 
     route("user/sessions") {
-        delete("/invalidate") {
-            val token = call.principal<Token>() ?: throw UnauthorizedPetition()
+        authenticateSelf {
+            delete("/invalidate") {
+                val token = call.principal<Token>()!!
 
-            userSessionsManagerService.invalidateRefreshTokens(token.userId)
+                invalidateRefreshTokens(token.userId)
+            }
+
+            get {
+                val token = call.principal<Token>()!!
+
+                val authentications = findActiveAuthentications(token.userId)
+                    .map { it.toResponse() }
+
+                call.respond(hashMapOf("authentications" to authentications))
+            }
         }
 
-        get {
-            val token = call.principal<Token>() ?: throw UnauthorizedPetition()
+        authenticateAdmin {
+            route("/{userId}") {
+                delete("/invalidate") {
+                    val userId = call.parameters["userId"]!!
 
-            val authentications = userSessionsManagerService.findActiveAuthentications(token.userId)
-                .map { it.toResponse() }
+                    invalidateRefreshTokens(UserId(userId))
+                }
 
-            call.respond(hashMapOf("authentications" to authentications))
+                get {
+                    val userId = call.parameters["userId"]!!
+
+                    val authentications = findActiveAuthentications(UserId(userId))
+                        .map { it.toResponse() }
+
+                    call.respond(hashMapOf("authentications" to authentications))
+                }
+            }
         }
     }
 }

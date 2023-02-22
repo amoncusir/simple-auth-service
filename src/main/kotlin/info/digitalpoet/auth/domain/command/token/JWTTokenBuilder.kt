@@ -24,7 +24,7 @@ class JWTTokenBuilder(
         val token = JWT.create()
             .withIssuer(configuration.issuer)
             .withAudience(*authentication.scope.map { it.service }.toTypedArray())
-            .withSubject(authentication.user.userId)
+            .withSubject(authentication.user.userId.toString())
             .withExpiresAt(Date.from(now.plusSeconds(configuration.ttl)))
             .withIssuedAt(Date.from(now))
             .withClaim("client", authentication.client)

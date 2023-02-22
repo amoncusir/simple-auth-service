@@ -5,7 +5,8 @@ import info.digitalpoet.auth.domain.model.Policy
 import info.digitalpoet.auth.domain.model.PolicyEffect
 import info.digitalpoet.auth.domain.model.User
 import info.digitalpoet.auth.domain.repository.UserRepository
-import info.digitalpoet.auth.utils.ID
+import info.digitalpoet.auth.domain.values.Email
+import info.digitalpoet.auth.domain.values.UserId
 
 interface CreateUser {
 
@@ -28,7 +29,7 @@ class CreateUserSelfPolicy(
 
     override operator fun invoke(create: CreateUser.Request): User {
         val hashedPassword = encodePassword(create.plainPassword)
-        val user = User(ID.random(), create.email, hashedPassword, true, DEFAULT_POLICY)
+        val user = User(UserId.new(), Email(create.email), hashedPassword, true, DEFAULT_POLICY)
 
         return userRepository.save(user)
     }

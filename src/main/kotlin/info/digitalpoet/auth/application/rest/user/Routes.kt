@@ -7,11 +7,6 @@ import io.ktor.server.routing.*
 fun Route.userRoutes() {
 
     createUser()
-
-    authenticate("self") {
-        getUser()
-
-        userSessions()
-
-    }
+    getUser()
+    userSessions()
 }

@@ -8,8 +8,5 @@ import io.ktor.server.routing.*
 fun Route.registerControllers() {
 
     userRoutes()
-
-    route("/authentication") {
-        authenticationRoutes()
-    }
+    authenticationRoutes()
 }

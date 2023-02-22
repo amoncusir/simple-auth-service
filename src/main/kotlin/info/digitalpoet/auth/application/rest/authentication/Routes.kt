@@ -4,14 +4,6 @@ import io.ktor.server.routing.*
 
 fun Route.authenticationRoutes() {
 
-    route("/refresh") {
-        refreshToken()
-    }
-
-    route("/{clientId}") {
-
-        route("/basic") {
-            basicRequestAuthentication()
-        }
-    }
+    refreshToken()
+    basicRequestAuthentication()
 }

@@ -4,6 +4,7 @@ import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
 import info.digitalpoet.auth.domain.repository.InvalidAuthentication
 import info.digitalpoet.auth.domain.repository.NotFoundEntity
+import info.digitalpoet.auth.domain.values.UserId
 import java.time.Instant
 
 class InMemoryAuthenticationRepository: AuthenticationRepository
@@ -25,7 +26,7 @@ class InMemoryAuthenticationRepository: AuthenticationRepository
         return cache.remove(refreshId) ?: throw NotFoundEntity(refreshId, "Authentication")
     }
 
-    override fun deleteByUserId(userId: String): List<Authentication>
+    override fun deleteByUserId(userId: UserId): List<Authentication>
     {
         val toRemoveAuth = findByUserId(userId)
 
@@ -34,7 +35,7 @@ class InMemoryAuthenticationRepository: AuthenticationRepository
         return toRemoveAuth
     }
 
-    override fun findByUserId(userId: String): List<Authentication>
+    override fun findByUserId(userId: UserId): List<Authentication>
     {
         val now = Instant.now()
         val auths = cache

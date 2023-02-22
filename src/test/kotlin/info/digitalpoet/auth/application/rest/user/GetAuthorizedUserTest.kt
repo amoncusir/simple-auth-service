@@ -1,11 +1,14 @@
 package info.digitalpoet.auth.application.rest.user
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.config.ConfigFactory
 import info.digitalpoet.auth.ApplicationEngineTest
 import info.digitalpoet.auth.application.rest.requestAuthenticationToken
 import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.command.user.CreateUser
+import info.digitalpoet.auth.domain.values.Email
+import info.digitalpoet.auth.domain.command.user.UpdateUserPolicies
+import info.digitalpoet.auth.domain.model.Policy
+import info.digitalpoet.auth.domain.model.PolicyEffect
 import info.digitalpoet.auth.module
 import io.kjson.test.JSONExpect
 import io.ktor.http.*
@@ -24,6 +27,11 @@ class GetAuthorizedUserTest: ApplicationEngineTest() {
 
         get<CreateUser>().apply {
             this(CreateUser.Request("test@test.test", "test".toCharArray()))
+            this(CreateUser.Request("admin@test.test", "test".toCharArray()))
+        }
+
+        get<UpdateUserPolicies>().apply {
+            this(Email("admin@test.test"), listOf(Policy("auth", listOf("*"), PolicyEffect.ALLOW)))
         }
     }
 
@@ -32,6 +40,8 @@ class GetAuthorizedUserTest: ApplicationEngineTest() {
         engine.apply {
 
             val token = requestAuthenticationToken()
+
+            println(token.token)
 
             handleRequest(HttpMethod.Get, "/user") {
                 addHeader(HttpHeaders.Authorization, token.toHeader())

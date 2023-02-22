@@ -33,33 +33,35 @@ fun Route.basicRequestAuthentication() {
 
     val ttl = application.environment.config.property("jwt.ttl").getString().toLong()
 
-    get {
-        val parameters = call.request.queryParameters
+    route("/authentication/{clientId}/basic") {
+        get {
+            val parameters = call.request.queryParameters
 
-        val scope = parameters.getAll("scope")!!.associateWith { listOf("*") }
+            val scope = parameters.getAll("scope")!!.associateWith { listOf("*") }
 
-        val request = UserAuthenticationService.AuthenticationRequest(
-            parameters["email"]!!,
-            parameters["password"]!!.toCharArray(),
-            scope,
-            call.parameters["clientId"]!!,
-            ttl,
-            parameters.contains("refresh"),
-        )
+            val request = UserAuthenticationService.AuthenticationRequest(
+                parameters["email"]!!,
+                parameters["password"]!!.toCharArray(),
+                scope,
+                call.parameters["clientId"]!!,
+                ttl,
+                parameters.contains("refresh"),
+            )
 
-        val authentication = userAuthenticationService.authenticateUser(request)
-        val response = tokenBuilder(authentication)
+            val authentication = userAuthenticationService.authenticateUser(request)
+            val response = tokenBuilder(authentication)
 
-        call.respond(hashMapOf("tokens" to response))
-    }
+            call.respond(hashMapOf("tokens" to response))
+        }
 
-    post {
-        val basicAuth: BasicAuthentication = call.receive()
-        val clientId = call.parameters["clientId"]!!
+        post {
+            val basicAuth: BasicAuthentication = call.receive()
+            val clientId = call.parameters["clientId"]!!
 
-        val authentication = userAuthenticationService.authenticateUser(basicAuth.toDomain(clientId, ttl))
-        val response = tokenBuilder(authentication)
+            val authentication = userAuthenticationService.authenticateUser(basicAuth.toDomain(clientId, ttl))
+            val response = tokenBuilder(authentication)
 
-        call.respond(hashMapOf("tokens" to response))
+            call.respond(hashMapOf("tokens" to response))
+        }
     }
 }
