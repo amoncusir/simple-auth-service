@@ -1,7 +1,7 @@
 package info.digitalpoet.auth.plugins
 
 
-import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -13,7 +13,7 @@ fun Application.configureSerialization()
         checkAcceptHeaderCompliance = true
 
         jackson {
-            enable(SerializationFeature.INDENT_OUTPUT)
+            registerKotlinModule()
         }
     }
 }

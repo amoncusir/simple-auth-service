@@ -50,6 +50,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
 
     implementation("io.ktor:ktor-server-status-pages:$ktor_version")
     implementation("io.ktor:ktor-server-core-jvm:2.2.3")

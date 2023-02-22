@@ -3,6 +3,7 @@ package info.digitalpoet.auth.application.rest.user
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.config.ConfigFactory
 import info.digitalpoet.auth.ApplicationEngineTest
+import info.digitalpoet.auth.application.rest.requestAuthenticationToken
 import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.command.user.CreateUser
 import info.digitalpoet.auth.module
@@ -17,8 +18,6 @@ import kotlin.test.assertNotNull
 
 class GetAuthorizedUserTest: ApplicationEngineTest() {
 
-    private val jsonMapper = ObjectMapper()
-
     override val engine = createTestApplicationWithConfig(HoconApplicationConfig(ConfigFactory.load("test.conf"))) {
 
         module()
@@ -31,26 +30,11 @@ class GetAuthorizedUserTest: ApplicationEngineTest() {
     @Test
     fun `login with test user and try to get own information`() {
         engine.apply {
-            val loginRequest: TestApplicationCall = handleRequest(HttpMethod.Post, "/authentication/testClient/basic") {
-                setBody(
-                    """
-                    {
-                        "email" : "test@test.test",
-                        "password" : "test",
-                        "scope" : { "auth": ["self"] },
-                        "refresh" : "false"
-                    }
-                """.trimIndent()
-                )
 
-                addHeader("Content-Type", "application/json; charset=utf-8")
-            }
-
-            val auth = jsonMapper.readTree(loginRequest.response.content)
-            val token = auth.get("tokens").get("token").asText()
+            val token = requestAuthenticationToken()
 
             handleRequest(HttpMethod.Get, "/user") {
-                addHeader(HttpHeaders.Authorization, "Bearer $token")
+                addHeader(HttpHeaders.Authorization, token.toHeader())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertNotNull(response.content)
