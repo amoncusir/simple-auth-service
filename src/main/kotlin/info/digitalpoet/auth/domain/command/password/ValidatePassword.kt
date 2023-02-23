@@ -14,7 +14,7 @@ class EncodingEqualityValidatePasswordService(private val eventPublisher: EventP
     override fun invoke(user: User, plainPassword: CharArray) {
         if (user.hashedPassword != encodePassword(plainPassword))
         {
-            eventPublisher("validate.password.fail", mapOf("user" to user))
+            eventPublisher("password.fail", mapOf("user" to user))
             throw InvalidPassword("Invalid password for user ${user.userId}")
         }
     }
@@ -27,7 +27,7 @@ class Argon2ValidatePasswordService(private val eventPublisher: EventPublisher,
     {
         if (!argon.validate(user.hashedPassword, plainPassword))
         {
-            eventPublisher("validate.password.fail", mapOf("user" to user))
+            eventPublisher("password.fail", mapOf("user" to user))
             throw InvalidPassword("Invalid password for user ${user.userId}")
         }
     }

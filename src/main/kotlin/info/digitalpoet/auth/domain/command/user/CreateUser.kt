@@ -1,6 +1,7 @@
 package info.digitalpoet.auth.domain.command.user
 
 import info.digitalpoet.auth.domain.command.password.EncodePassword
+import info.digitalpoet.auth.domain.command.tracer.EventPublisher
 import info.digitalpoet.auth.domain.model.Policy
 import info.digitalpoet.auth.domain.model.PolicyEffect
 import info.digitalpoet.auth.domain.model.User
@@ -20,7 +21,8 @@ interface CreateUser {
 
 class CreateUserSelfPolicy(
     private val userRepository: UserRepository,
-    private val encodePassword: EncodePassword
+    private val encodePassword: EncodePassword,
+    private val eventPublisher: EventPublisher
 ): CreateUser
 {
     companion object {
@@ -31,6 +33,7 @@ class CreateUserSelfPolicy(
         val hashedPassword = encodePassword(create.plainPassword)
         val user = User(UserId.new(), Email(create.email), hashedPassword, true, DEFAULT_POLICY)
 
-        return userRepository.save(user)
+        try { return userRepository.save(user) }
+        finally { eventPublisher("user.new", mapOf("user" to user)) }
     }
 }

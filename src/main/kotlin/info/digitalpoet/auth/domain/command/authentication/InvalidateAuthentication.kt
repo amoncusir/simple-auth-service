@@ -1,5 +1,6 @@
 package info.digitalpoet.auth.domain.command.authentication
 
+import info.digitalpoet.auth.domain.command.tracer.EventPublisher
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
 import info.digitalpoet.auth.domain.values.UserId
 
@@ -9,10 +10,12 @@ interface InvalidateAuthentication
 }
 
 class RepositoryInvalidateAuthentication(
-    private val authenticationRepository: AuthenticationRepository
+    private val authenticationRepository: AuthenticationRepository,
+    private val eventPublisher: EventPublisher
 ): InvalidateAuthentication
 {
     override fun invoke(id: UserId) {
-        authenticationRepository.deleteByUserId(id)
+        try { authenticationRepository.deleteByUserId(id) }
+        finally { eventPublisher("authentication.invalidate", mapOf("userId" to id)) }
     }
 }

@@ -2,6 +2,7 @@ package info.digitalpoet.auth.plugins
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import info.digitalpoet.auth.domain.command.tracer.EventPublisher
 import info.digitalpoet.auth.domain.entity.Token
 import info.digitalpoet.auth.domain.model.AuthenticationScope
 import info.digitalpoet.auth.domain.values.UserId
@@ -12,6 +13,8 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.hsts.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.koin.core.context.GlobalContext
+import org.koin.java.KoinJavaComponent
 
 fun Route.authenticateSelf(build: Route.() -> Unit) = authenticate(
     "self", strategy = AuthenticationStrategy.Required, build = build
@@ -49,7 +52,7 @@ fun Application.configureSecurity() {
             issuer = issuer,
             audience = audience,
             ownRealm = ownRealm,
-            validateFun = tokenValidationForGrants(audience, "self")
+            validateFun = tokenValidationForGrants(audience, "admin")
         )
 
         jwtAuthentication(
@@ -72,7 +75,7 @@ fun Application.configureSecurity() {
 fun tokenValidationForGrants(audience: String, vararg grants: String): suspend ApplicationCall.(JWTCredential) -> Principal?
 {
     return validation@{credential ->
-                if (credential.subject?.isNotEmpty() == true) {
+                if (!credential.subject.isNullOrEmpty()) {
                     val token = mapCredentialToToken(credential)
                     if (token.hasServiceWithGrants(audience, *grants)) token else null
                 } else null
@@ -88,6 +91,8 @@ fun AuthenticationConfig.jwtAuthentication(
     validateFun: suspend ApplicationCall.(JWTCredential) -> Principal?
 )
 {
+    val eventPublisher by GlobalContext.get().inject<EventPublisher>()
+
     jwt(name) {
 
         realm = ownRealm
@@ -107,7 +112,13 @@ fun AuthenticationConfig.jwtAuthentication(
 
         validate(validateFun)
 
-        challenge { _, _ ->
+        challenge { defaultSchema, realm ->
+            eventPublisher("authentication.fail", mapOf(
+                "accessType" to name,
+                "defaultSchema" to defaultSchema,
+                "realm" to realm,
+            ))
+
             call.respond(HttpStatusCode.Unauthorized, "Invalid Token")
         }
     }

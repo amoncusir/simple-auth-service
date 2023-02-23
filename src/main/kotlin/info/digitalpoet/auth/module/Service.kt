@@ -39,7 +39,7 @@ fun serviceModule(): Module
         single<InvalidateAuthentication> { RepositoryInvalidateAuthentication(get()) }
         single<FindActiveAuthentications> { AuthRepositoryFindActiveAuthentications(get()) }
 
-        single<CreateUser> { CreateUserSelfPolicy(get(), get()) }
+        single<CreateUser> { CreateUserSelfPolicy(get(), get(), get()) }
         single<GetUser> { SimpleRepositoryGetUser(get()) }
         single<UpdateUserPolicies> { RepositoryUpdateUserPolicies(get(), get()) }
 
