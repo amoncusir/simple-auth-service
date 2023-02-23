@@ -41,8 +41,9 @@ fun serviceModule(): Module
         }
 
         single<AuthenticationIssuer> {
-            val ttl = get<Application>().environment.config.property("jwt.ttl").getString().toLong()
-            UserPolicyValidatorAuthenticationIssuer(get(), get(), get(), get(), get(), ttl)
+            val jwtTtl = get<Application>().environment.config.property("jwt.ttl").getString().toLong()
+            val refreshTtl = get<Application>().environment.config.property("jwt.refresh-ttl-plus").getString().toLong()
+            UserPolicyValidatorAuthenticationIssuer(get(), get(), get(), get(), get(), jwtTtl + refreshTtl)
         }
 
         single<InvalidateAuthentication> { RepositoryInvalidateAuthentication(get(), get()) }

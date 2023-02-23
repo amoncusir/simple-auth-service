@@ -3,6 +3,7 @@ package info.digitalpoet.auth.application.rest
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import info.digitalpoet.auth.domain.model.AuthenticationScope
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlin.reflect.KClass
@@ -49,7 +50,7 @@ fun TestApplicationEngine.requestAuthenticationToken(
         .map { "\"${it.component1()}\": [${it.component2()}]" }
         .joinToString()
 
-    val loginRequest: TestApplicationCall = handleRequest(HttpMethod.Post, "/authentication/testClient/basic") {
+    val loginRequest = handleRequest(HttpMethod.Post, "/authentication/testClient/basic") {
                 setBody(
                     """
                     {
@@ -64,5 +65,20 @@ fun TestApplicationEngine.requestAuthenticationToken(
                 addHeader("Content-Type", "application/json; charset=utf-8")
             }
 
-    return JsonSerializer.toObjectWithRoot("tokens", loginRequest.response.content!!)
+    if (loginRequest.response.status()?.isSuccess() == true)
+        return JsonSerializer.toObjectWithRoot("tokens", loginRequest.response.content!!)
+    else
+        throw AssertionError("Invalid authentication with status: ${loginRequest.response.status()}")
+}
+
+fun TestApplicationEngine.requestAuthenticationTokenRefresh(refreshToken: String): AuthenticationToken
+{
+    val loginRequest = handleRequest(HttpMethod.Get, "/authentication/refresh/$refreshToken") {
+        addHeader("Content-Type", "application/json; charset=utf-8")
+    }
+
+    if (loginRequest.response.status()?.isSuccess() == true)
+        return JsonSerializer.toObjectWithRoot("tokens", loginRequest.response.content!!)
+    else
+        throw AssertionError("Invalid authentication with status: ${loginRequest.response.status()}")
 }

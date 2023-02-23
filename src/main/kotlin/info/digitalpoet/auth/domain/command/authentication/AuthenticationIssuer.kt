@@ -1,12 +1,14 @@
 package info.digitalpoet.auth.domain.command.authentication
 
 import info.digitalpoet.auth.domain.InvalidPolicies
+import info.digitalpoet.auth.domain.InvalidRefreshId
 import info.digitalpoet.auth.domain.InvalidUser
 import info.digitalpoet.auth.domain.command.password.ValidatePassword
 import info.digitalpoet.auth.domain.command.tracer.EventPublisher
 import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.model.AuthenticationScope
 import info.digitalpoet.auth.domain.repository.AuthenticationRepository
+import info.digitalpoet.auth.domain.repository.NotFoundEntity
 import info.digitalpoet.auth.domain.repository.UserRepository
 import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.domain.values.RefreshId
@@ -34,12 +36,16 @@ class UserPolicyValidatorAuthenticationIssuer(
     private val validatePassword: ValidatePassword,
     private val policyValidator: PolicyValidator,
     private val eventPublisher: EventPublisher,
-    private val jwtTtl: Long
+    private val refreshTokenTtl: Long
 ): AuthenticationIssuer
 {
     override fun invoke(request: AuthenticationIssuer.Request): Authentication
     {
-        val user = userRepository.findUserByEmail(Email(request.email))
+        val user = try {
+            userRepository.findUserByEmail(Email(request.email))
+        } catch (e: NotFoundEntity) {
+            throw InvalidUser("User Not found by email: ${request.email}")
+        }
 
         if (!user.isValid()) {
             eventPublisher("login.invalid.user", mapOf("user" to user))
@@ -59,7 +65,7 @@ class UserPolicyValidatorAuthenticationIssuer(
             user,
             scope,
             request.clientId,
-            Instant.now().plusSeconds(request.ttl),
+            Instant.now().plusSeconds(refreshTokenTtl),
             if (request.withRefresh) RefreshId.new() else null
         )
 
@@ -72,13 +78,21 @@ class UserPolicyValidatorAuthenticationIssuer(
 
     override fun invoke(refreshId: RefreshId): Authentication
     {
-        val authentication = authenticationRepository.delete(refreshId)
+        val authentication = try {
+            authenticationRepository.delete(refreshId)
+        } catch (e: NotFoundEntity) {
+            throw InvalidRefreshId("Not Found refreshId: $refreshId")
+        }
+
+        if(authentication.ttl.isBefore(Instant.now())) {
+            throw InvalidRefreshId("Expired refreshId: $refreshId")
+        }
 
         if (!authentication.user.isValid()) throw InvalidUser("Invalid userId: ${authentication.user.userId}")
 
         policyValidator(authentication.user, authentication.scope)
 
-        val newAuth = authentication.newAuth(refreshId = RefreshId.new(), Instant.now().plusSeconds(jwtTtl))
+        val newAuth = authentication.newAuth(refreshId = RefreshId.new(), Instant.now().plusSeconds(refreshTokenTtl))
 
         authenticationRepository.save(newAuth)
 

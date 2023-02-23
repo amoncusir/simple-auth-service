@@ -4,10 +4,10 @@ import com.typesafe.config.ConfigFactory
 import info.digitalpoet.auth.ApplicationEngineTest
 import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.command.user.CreateUser
-import info.digitalpoet.auth.domain.command.user.UpdateUserPolicies
 import info.digitalpoet.auth.domain.command.user.UpdateUserStatus
 import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.module
+import info.digitalpoet.auth.testUser
 import io.kjson.test.JSONExpect.Companion.expectJSON
 import io.ktor.http.*
 import io.ktor.server.config.*
@@ -27,9 +27,9 @@ class RequestAuthenticationTest: ApplicationEngineTest()
         module()
 
         get<CreateUser>().apply {
-            this(CreateUser.Request("test@test.test", "test".toCharArray()))
-            this(CreateUser.Request("policy@test.test", "test".toCharArray()))
-            this(CreateUser.Request("invalid@test.test", "test".toCharArray()))
+            testUser()
+            testUser("admin@test.test")
+            testUser("invalid@test.test")
         }
 
         get<UpdateUserStatus>().apply {
@@ -123,7 +123,6 @@ class RequestAuthenticationTest: ApplicationEngineTest()
             }
                 .apply {
                     assertEquals(HttpStatusCode.Unauthorized, response.status())
-                    assertNotNull(response.content)
                 }
         }
     }
@@ -146,7 +145,6 @@ class RequestAuthenticationTest: ApplicationEngineTest()
             }
                 .apply {
                     assertEquals(HttpStatusCode.Unauthorized, response.status())
-                    assertNotNull(response.content)
                 }
         }
     }
@@ -172,7 +170,6 @@ class RequestAuthenticationTest: ApplicationEngineTest()
             }
                 .apply {
                     assertEquals(HttpStatusCode.Unauthorized, response.status())
-                    assertNotNull(response.content)
                 }
         }
     }

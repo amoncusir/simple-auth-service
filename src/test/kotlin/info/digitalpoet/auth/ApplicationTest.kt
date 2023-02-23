@@ -1,5 +1,6 @@
 package info.digitalpoet.auth
 
+import info.digitalpoet.auth.domain.command.user.CreateUser
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.engine.*
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.koin.ktor.ext.get
+
+fun CreateUser.testUser(email: String = "test@test.test") = this(CreateUser.Request(email, "test".toCharArray()))
 
 fun createTestApplicationWithConfig(
     environment: ApplicationEngineEnvironment = createTestEnvironment(),

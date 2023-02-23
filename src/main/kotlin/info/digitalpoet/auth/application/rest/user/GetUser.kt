@@ -2,6 +2,7 @@ package info.digitalpoet.auth.application.rest.user
 
 import info.digitalpoet.auth.domain.command.user.GetUser
 import info.digitalpoet.auth.domain.entity.Token
+import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.domain.values.UserId
 import info.digitalpoet.auth.plugins.security.authenticateAdmin
 import info.digitalpoet.auth.plugins.security.authenticateSelf
@@ -28,6 +29,13 @@ fun Route.getUser() {
         get("/user/id/{userId}") {
             val userId = call.parameters["userId"]!!
             val user = userFinder(UserId(userId))
+
+            call.respond(hashMapOf("user" to user.toResponse()))
+        }
+
+        get("/user/email/{email}") {
+            val email = call.parameters["email"]!!
+            val user = userFinder(Email(email))
 
             call.respond(hashMapOf("user" to user.toResponse()))
         }

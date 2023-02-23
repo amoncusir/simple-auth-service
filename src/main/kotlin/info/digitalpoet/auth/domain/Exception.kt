@@ -8,4 +8,6 @@ class InvalidPassword(message: String? = null, cause: Throwable? = null) : Inval
 
 class InvalidUser(message: String? = null, cause: Throwable? = null) : InvalidAuthentication(message, cause)
 
+class InvalidRefreshId(message: String? = null, cause: Throwable? = null) : InvalidAuthentication(message, cause)
+
 class InvalidPolicies(message: String? = null, cause: Throwable? = null) : InvalidAuthentication(message, cause)

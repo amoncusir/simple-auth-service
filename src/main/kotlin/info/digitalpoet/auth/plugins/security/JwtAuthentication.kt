@@ -10,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import org.koin.core.context.GlobalContext
 
@@ -47,7 +48,6 @@ fun AuthenticationConfig.jwtAuthentication(
                 .withClaimPresence("iat")
                 .withClaimPresence("client")
                 .withClaimPresence("scope")
-                .acceptLeeway(2)
                 .build()
         }
 
@@ -66,10 +66,16 @@ fun AuthenticationConfig.jwtAuthentication(
         }
 
         challenge { defaultSchema, realm ->
+
+            val authorizationHeader = call.request.authorization()
+            val decodedToken = try { JWT.decode(authorizationHeader?.replace("Bearer ", "")) } catch (_: Throwable) {}
+
             eventPublisher("authentication.fail", mapOf(
                 "accessType" to name,
                 "defaultSchema" to defaultSchema,
                 "realm" to realm,
+                "authorizationHeader" to authorizationHeader,
+                "decodedToken" to decodedToken,
             ))
 
             call.respond(HttpStatusCode.Unauthorized, "Invalid Token")
