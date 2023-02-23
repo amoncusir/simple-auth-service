@@ -36,7 +36,7 @@ fun serviceModule(): Module
             UserPolicyValidatorAuthenticationIssuer(get(), get(), get(), get(), get(), ttl)
         }
 
-        single<InvalidateAuthentication> { RepositoryInvalidateAuthentication(get()) }
+        single<InvalidateAuthentication> { RepositoryInvalidateAuthentication(get(), get()) }
         single<FindActiveAuthentications> { AuthRepositoryFindActiveAuthentications(get()) }
 
         single<CreateUser> { CreateUserSelfPolicy(get(), get(), get()) }

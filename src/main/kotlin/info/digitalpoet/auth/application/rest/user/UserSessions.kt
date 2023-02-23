@@ -4,8 +4,8 @@ import info.digitalpoet.auth.domain.command.authentication.FindActiveAuthenticat
 import info.digitalpoet.auth.domain.command.authentication.InvalidateAuthentication
 import info.digitalpoet.auth.domain.entity.Token
 import info.digitalpoet.auth.domain.values.UserId
-import info.digitalpoet.auth.plugins.authenticateAdmin
-import info.digitalpoet.auth.plugins.authenticateSelf
+import info.digitalpoet.auth.plugins.security.authenticateAdmin
+import info.digitalpoet.auth.plugins.security.authenticateSelf
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
