@@ -14,7 +14,16 @@ fun serviceModule(): Module
 {
     return module(createdAtStart = true) {
 
-        single { Argon2Wrapper(Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, 32, 128), iterations = 27) }
+        single {
+            val pwdConfig = get<Application>().environment.config.config("password-encoder")
+
+            val type = Argon2Factory.Argon2Types.valueOf(pwdConfig.property("type").getString())
+            val saltLength = pwdConfig.property("salt-length").getString().toInt()
+            val hashLength = pwdConfig.property("hash-length").getString().toInt()
+            val iterations = pwdConfig.property("iterations").getString().toInt()
+
+            Argon2Wrapper(Argon2Factory.create(type, saltLength, hashLength), iterations = iterations)
+        }
         single<EncodePassword> { Argon2EncodePasswordService(get()) }
         single<ValidatePassword> { Argon2ValidatePasswordService(get(), get()) }
 
