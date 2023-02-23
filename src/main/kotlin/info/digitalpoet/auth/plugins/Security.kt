@@ -62,7 +62,7 @@ fun Application.configureSecurity() {
             audience = audience,
             ownRealm = ownRealm,
             validateFun = { jwtCredential ->
-                if(jwtCredential.subject.isNullOrEmpty()) null else mapCredentialToToken(jwtCredential)
+                if(jwtCredential.subject.isNullOrEmpty()) null else jwtCredential.toToken()
             }
         )
     }
@@ -76,7 +76,7 @@ fun tokenValidationForGrants(audience: String, vararg grants: String): suspend A
 {
     return validation@{credential ->
                 if (!credential.subject.isNullOrEmpty()) {
-                    val token = mapCredentialToToken(credential)
+                    val token = credential.toToken()
                     if (token.hasServiceWithGrants(audience, *grants)) token else null
                 } else null
         }
@@ -124,17 +124,18 @@ fun AuthenticationConfig.jwtAuthentication(
     }
 }
 
-private fun mapCredentialToToken(credential: JWTCredential): Token {
-    val mapScope = credential.getClaim("scope", HashMap::class)!!
+private fun JWTCredential.toToken(): Token
+{
+    val mapScope = getClaim("scope", HashMap::class)!!
 
     val scope = mapScope
         .entries
         .map { AuthenticationScope(it.key as String, it.value as List<String>) }
 
     return Token(
-        UserId(credential.subject!!),
+        UserId(subject!!),
         scope,
-        credential["client"]!!,
-        credential.expiresAt!!.toInstant()
+        this["client"]!!,
+        expiresAt!!.toInstant()
     )
 }
