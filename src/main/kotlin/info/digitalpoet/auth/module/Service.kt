@@ -52,6 +52,6 @@ fun serviceModule(): Module
         single<GetUser> { SimpleRepositoryGetUser(get()) }
         single<UpdateUserPolicies> { RepositoryUpdateUserPolicies(get(), get()) }
 
-        single<PolicyValidator> { ValidAllPolicyValidator() }
+        single<PolicyValidator> { WildcardPolicyValidator() }
     }
 }

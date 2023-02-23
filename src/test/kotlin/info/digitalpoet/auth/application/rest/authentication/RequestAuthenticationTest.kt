@@ -4,6 +4,8 @@ import com.typesafe.config.ConfigFactory
 import info.digitalpoet.auth.ApplicationEngineTest
 import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.command.user.CreateUser
+import info.digitalpoet.auth.domain.command.user.UpdateUserPolicies
+import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.module
 import io.kjson.test.JSONExpect.Companion.expectJSON
 import io.ktor.http.*
@@ -25,6 +27,7 @@ class RequestAuthenticationTest: ApplicationEngineTest()
 
         get<CreateUser>().apply {
             this(CreateUser.Request("test@test.test", "test".toCharArray()))
+            this(CreateUser.Request("policy@test.test", "test".toCharArray()))
         }
     }
 
@@ -71,7 +74,7 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                     {
                         "email" : "test@test.test",
                         "password" : "test",
-                        "scope" : { "auth": ["*"] },
+                        "scope" : { "auth": ["self"] },
                         "refresh" : "$requestRefreshToken"
                     }
                 """.trimIndent())
@@ -105,7 +108,32 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                     {
                         "email" : "test@test.test",
                         "password" : "invalid_password",
-                        "scope" : { "auth": ["*"] },
+                        "scope" : { "auth": ["self"] },
+                        "refresh" : "false"
+                    }
+                """.trimIndent())
+
+                addHeader("Content-Type", "application/json; charset=utf-8")
+            }
+                .apply {
+                    assertEquals(HttpStatusCode.Unauthorized, response.status())
+                    assertNotNull(response.content)
+                }
+        }
+    }
+    @ParameterizedTest
+    @ValueSource(strings = ["*", "admin", "admin,self", "writer", "*,self", "reader,*", "reader,admin"])
+    fun `invalid scope must return unauthorized error code`(scope: String)
+    {
+        val formattedScope = scope.split(",").joinToString(prefix = "\"", postfix = "\"")
+
+        engine.apply {
+            handleRequest(HttpMethod.Post, "/authentication/testClient/basic") {
+                setBody("""
+                    {
+                        "email" : "policy@test.test",
+                        "password" : "test",
+                        "scope" : { "auth": [$formattedScope] },
                         "refresh" : "false"
                     }
                 """.trimIndent())

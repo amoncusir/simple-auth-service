@@ -7,3 +7,5 @@ open class InvalidAuthentication(message: String? = null, cause: Throwable? = nu
 class InvalidPassword(message: String? = null, cause: Throwable? = null) : InvalidAuthentication(message, cause)
 
 class InvalidUser(message: String? = null, cause: Throwable? = null) : InvalidAuthentication(message, cause)
+
+class InvalidPolicies(message: String? = null, cause: Throwable? = null) : InvalidAuthentication(message, cause)

@@ -5,7 +5,7 @@ import java.time.Instant
 
 data class AuthenticationScope(
     val service: String,
-    val grant: List<String>
+    val grant: Set<String>
 )
 
 data class Authentication(

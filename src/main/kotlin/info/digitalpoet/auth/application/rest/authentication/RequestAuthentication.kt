@@ -36,7 +36,7 @@ fun Route.basicRequestAuthentication() {
         get {
             val parameters = call.request.queryParameters
 
-            val scope = parameters.getAll("scope")!!.associateWith { listOf("*") }
+            val scope = parameters.getAll("scope")!!.associateWith { listOf<String>() }
 
             val request = AuthenticationIssuer.Request(
                 parameters["email"]!!,

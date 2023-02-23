@@ -5,10 +5,18 @@ import info.digitalpoet.auth.domain.model.User
 
 interface PolicyValidator
 {
-    operator fun invoke(user: User, requestedScope: List<AuthenticationScope>)
+    operator fun invoke(user: User, requestedScope: List<AuthenticationScope>): Boolean
 }
 
 class ValidAllPolicyValidator: PolicyValidator
 {
-    override fun invoke(user: User, requestedScope: List<AuthenticationScope>) { }
+    override fun invoke(user: User, requestedScope: List<AuthenticationScope>): Boolean = true
+}
+
+class WildcardPolicyValidator: PolicyValidator
+{
+    override fun invoke(user: User, requestedScope: List<AuthenticationScope>): Boolean
+    {
+        return user.isValid() && user.policies.isAllowed(requestedScope)
+    }
 }

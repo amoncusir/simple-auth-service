@@ -83,7 +83,7 @@ internal fun JWTCredential.toToken(): Token
 
     val scope = mapScope
         .entries
-        .map { AuthenticationScope(it.key as String, it.value as List<String>) }
+        .map { AuthenticationScope(it.key as String, (it.value as List<String>).toSet()) }
 
     return Token(
         UserId(subject!!),

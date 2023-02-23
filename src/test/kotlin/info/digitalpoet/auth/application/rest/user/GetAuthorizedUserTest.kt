@@ -5,10 +5,9 @@ import info.digitalpoet.auth.ApplicationEngineTest
 import info.digitalpoet.auth.application.rest.requestAuthenticationToken
 import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.command.user.CreateUser
-import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.domain.command.user.UpdateUserPolicies
 import info.digitalpoet.auth.domain.model.Policy
-import info.digitalpoet.auth.domain.model.PolicyEffect
+import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.module
 import io.kjson.test.JSONExpect
 import io.ktor.http.*
@@ -31,7 +30,7 @@ class GetAuthorizedUserTest: ApplicationEngineTest() {
         }
 
         get<UpdateUserPolicies>().apply {
-            this(Email("admin@test.test"), listOf(Policy("auth", listOf("*"), PolicyEffect.ALLOW)))
+            this(Email("admin@test.test"), listOf(Policy.buildWildcard("auth")))
         }
     }
 

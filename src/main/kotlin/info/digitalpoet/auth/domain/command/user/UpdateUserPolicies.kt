@@ -1,6 +1,7 @@
 package info.digitalpoet.auth.domain.command.user
 
 import info.digitalpoet.auth.domain.command.tracer.EventPublisher
+import info.digitalpoet.auth.domain.model.Policies
 import info.digitalpoet.auth.domain.model.Policy
 import info.digitalpoet.auth.domain.model.User
 import info.digitalpoet.auth.domain.repository.UserRepository
@@ -33,7 +34,7 @@ class RepositoryUpdateUserPolicies(
 
     private fun update(policies: List<Policy>, user: () -> User): User
     {
-        val updatedUser = user().copy(policies = policies)
+        val updatedUser = user().copy(policies = Policies(policies.toSet()))
 
         try { return userRepository.update(updatedUser) }
         finally { eventPublisher("user.edit.policy", mapOf("policies" to policies, "user" to updatedUser)) }

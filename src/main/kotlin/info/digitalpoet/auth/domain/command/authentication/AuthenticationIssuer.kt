@@ -1,5 +1,6 @@
 package info.digitalpoet.auth.domain.command.authentication
 
+import info.digitalpoet.auth.domain.InvalidPolicies
 import info.digitalpoet.auth.domain.InvalidUser
 import info.digitalpoet.auth.domain.command.password.ValidatePassword
 import info.digitalpoet.auth.domain.command.tracer.EventPublisher
@@ -40,13 +41,19 @@ class UserPolicyValidatorAuthenticationIssuer(
     {
         val user = userRepository.findUserByEmail(Email(request.email))
 
-        if (!user.isValid()) throw InvalidUser("Invalid userId: ${user.userId}")
+        if (!user.isValid()) {
+            eventPublisher("login.invalid.user", mapOf("user" to user))
+            throw InvalidUser("Invalid userId: ${user.userId}")
+        }
 
         validatePassword(user, request.rawPassword)
 
         val scope = buildScope(request.scope)
 
-        policyValidator(user, scope)
+        if(!policyValidator(user, scope)) {
+            eventPublisher("login.invalid.policies", mapOf("user" to user, "scope" to scope))
+            throw InvalidPolicies("Invalid requested policies for user: ${user.userId}")
+        }
 
         val auth = Authentication(
             user,
@@ -83,6 +90,6 @@ class UserPolicyValidatorAuthenticationIssuer(
     private fun buildScope(scope: Map<String, List<String>>): List<AuthenticationScope> {
         return scope
             .entries
-            .map { AuthenticationScope(it.key, it.value) }
+            .map { AuthenticationScope(it.key, it.value.toSet()) }
     }
 }

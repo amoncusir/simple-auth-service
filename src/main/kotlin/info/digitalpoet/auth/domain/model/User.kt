@@ -8,7 +8,7 @@ data class User(
     val email: Email,
     val hashedPassword: String,
     val isActive: Boolean,
-    val policies: List<Policy>
+    val policies: Policies
 ) {
     fun isValid(): Boolean = this.isActive
 }

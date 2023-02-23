@@ -2,8 +2,8 @@ package info.digitalpoet.auth.domain.command.user
 
 import info.digitalpoet.auth.domain.command.password.EncodePassword
 import info.digitalpoet.auth.domain.command.tracer.EventPublisher
+import info.digitalpoet.auth.domain.model.Policies
 import info.digitalpoet.auth.domain.model.Policy
-import info.digitalpoet.auth.domain.model.PolicyEffect
 import info.digitalpoet.auth.domain.model.User
 import info.digitalpoet.auth.domain.repository.UserRepository
 import info.digitalpoet.auth.domain.values.Email
@@ -26,7 +26,7 @@ class CreateUserSelfPolicy(
 ): CreateUser
 {
     companion object {
-        private val DEFAULT_POLICY = listOf(Policy("auth", listOf("self"), PolicyEffect.ALLOW))
+        private val DEFAULT_POLICY = Policies(Policy("auth", "self"))
     }
 
     override operator fun invoke(create: CreateUser.Request): User {

@@ -28,7 +28,7 @@ class JWTTokenBuilder(
             .withExpiresAt(Date.from(now.plusSeconds(configuration.ttl)))
             .withIssuedAt(Date.from(now))
             .withClaim("client", authentication.client)
-            .withClaim("scope", authentication.scope.associate { it.service to it.grant })
+            .withClaim("scope", authentication.scope.associate { it.service to it.grant.toList() })
             .sign(Algorithm.HMAC512(configuration.secret))
 
         return TokenBuilder.Response(token, authentication.refreshId)
