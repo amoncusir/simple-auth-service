@@ -5,6 +5,7 @@ import info.digitalpoet.auth.ApplicationEngineTest
 import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.command.user.CreateUser
 import info.digitalpoet.auth.domain.command.user.UpdateUserPolicies
+import info.digitalpoet.auth.domain.command.user.UpdateUserStatus
 import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.module
 import io.kjson.test.JSONExpect.Companion.expectJSON
@@ -28,6 +29,11 @@ class RequestAuthenticationTest: ApplicationEngineTest()
         get<CreateUser>().apply {
             this(CreateUser.Request("test@test.test", "test".toCharArray()))
             this(CreateUser.Request("policy@test.test", "test".toCharArray()))
+            this(CreateUser.Request("invalid@test.test", "test".toCharArray()))
+        }
+
+        get<UpdateUserStatus>().apply {
+            this(Email("invalid@test.test"), false)
         }
     }
 
@@ -121,6 +127,30 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                 }
         }
     }
+
+    @Test
+    fun `invalid user must return unauthorized error code`()
+    {
+        engine.apply {
+            handleRequest(HttpMethod.Post, "/authentication/testClient/basic") {
+                setBody("""
+                    {
+                        "email" : "invalid@test.test",
+                        "password" : "test",
+                        "scope" : { "auth": ["self"] },
+                        "refresh" : "false"
+                    }
+                """.trimIndent())
+
+                addHeader("Content-Type", "application/json; charset=utf-8")
+            }
+                .apply {
+                    assertEquals(HttpStatusCode.Unauthorized, response.status())
+                    assertNotNull(response.content)
+                }
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(strings = ["*", "admin", "admin,self", "writer", "*,self", "reader,*", "reader,admin"])
     fun `invalid scope must return unauthorized error code`(scope: String)

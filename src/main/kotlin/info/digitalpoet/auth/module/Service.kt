@@ -51,6 +51,7 @@ fun serviceModule(): Module
         single<CreateUser> { CreateUserSelfPolicy(get(), get(), get()) }
         single<GetUser> { SimpleRepositoryGetUser(get()) }
         single<UpdateUserPolicies> { RepositoryUpdateUserPolicies(get(), get()) }
+        single<UpdateUserStatus> { RepositoryUpdateUserStatus(get(), get()) }
 
         single<PolicyValidator> { WildcardPolicyValidator() }
     }
