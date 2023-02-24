@@ -1,5 +1,6 @@
 package info.digitalpoet.auth.plugins
 
+import info.digitalpoet.auth.plugins.security.AuthenticationProfile
 import info.digitalpoet.auth.plugins.security.jwtAuthentication
 import info.digitalpoet.auth.plugins.security.toToken
 import info.digitalpoet.auth.plugins.security.tokenValidationForGrants
@@ -17,7 +18,7 @@ fun Application.configureSecurity() {
         val ownRealm = jwtConfiguration.property("realm").getString()
 
         jwtAuthentication(
-            name = "self",
+            name = AuthenticationProfile.SELF.profile,
             secret = jwtConfiguration.property("secret").getString(),
             issuer = issuer,
             audience = audience,
@@ -26,7 +27,7 @@ fun Application.configureSecurity() {
         )
 
         jwtAuthentication(
-            name = "admin",
+            name = AuthenticationProfile.ADMIN.profile,
             secret = jwtConfiguration.property("secret").getString(),
             issuer = issuer,
             audience = audience,
@@ -35,7 +36,7 @@ fun Application.configureSecurity() {
         )
 
         jwtAuthentication(
-            name = "service",
+            name = AuthenticationProfile.SERVICE.profile,
             secret = jwtConfiguration.property("service-secret").getString(),
             issuer = issuer,
             audience = audience,
