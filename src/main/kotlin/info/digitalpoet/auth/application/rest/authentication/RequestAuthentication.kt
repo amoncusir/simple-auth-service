@@ -2,15 +2,18 @@ package info.digitalpoet.auth.application.rest.authentication
 
 import info.digitalpoet.auth.domain.command.authentication.AuthenticationIssuer
 import info.digitalpoet.auth.domain.command.token.TokenBuilder
+import info.digitalpoet.auth.plugins.SerializableCharArray
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
 
+@Serializable
 class BasicAuthentication(
     val email: String,
-    val password: CharArray,
+    val password: SerializableCharArray,
     val scope: Map<String, List<String>>,
     val refresh: Boolean = false,
 )
@@ -50,7 +53,7 @@ fun Route.basicRequestAuthentication() {
             val authentication = authenticationIssuer(request)
             val response = tokenBuilder(authentication)
 
-            call.respond(hashMapOf("tokens" to response))
+            call.respond(mapOf("tokens" to response.toResponse()))
         }
 
         post {
@@ -60,7 +63,7 @@ fun Route.basicRequestAuthentication() {
             val authentication = authenticationIssuer(basicAuth.toDomain(clientId, ttl))
             val response = tokenBuilder(authentication)
 
-            call.respond(hashMapOf("tokens" to response))
+            call.respond(hashMapOf("tokens" to response.toResponse()))
         }
     }
 }

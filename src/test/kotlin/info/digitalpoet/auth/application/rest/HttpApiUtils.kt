@@ -57,7 +57,7 @@ fun TestApplicationEngine.requestAuthenticationToken(
                         "email" : "$email",
                         "password" : "$password",
                         "scope" : { $serializedScope },
-                        "refresh" : "$refresh"
+                        "refresh" : $refresh
                     }
                 """.trimIndent()
                 )

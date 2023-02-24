@@ -20,6 +20,6 @@ fun Route.refreshToken() {
         val authentication = authenticationIssuer(RefreshId(refreshId))
         val response = tokenBuilder(authentication)
 
-        call.respond(hashMapOf("tokens" to response))
+        call.respond(mapOf("tokens" to response.toResponse()))
     }
 }

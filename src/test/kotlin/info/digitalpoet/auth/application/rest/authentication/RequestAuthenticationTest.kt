@@ -55,6 +55,8 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertNotNull(response.content)
 
+                println(response.content)
+
                 expectJSON(response.content!!) {
                     property("tokens") {
                         property("token") {
@@ -81,7 +83,7 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                         "email" : "test@test.test",
                         "password" : "test",
                         "scope" : { "auth": ["self"] },
-                        "refresh" : "$requestRefreshToken"
+                        "refresh" : $requestRefreshToken
                     }
                 """.trimIndent())
 
@@ -115,7 +117,7 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                         "email" : "test@test.test",
                         "password" : "invalid_password",
                         "scope" : { "auth": ["self"] },
-                        "refresh" : "false"
+                        "refresh" : false
                     }
                 """.trimIndent())
 
@@ -137,7 +139,7 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                         "email" : "invalid@test.test",
                         "password" : "test",
                         "scope" : { "auth": ["self"] },
-                        "refresh" : "false"
+                        "refresh" : false
                     }
                 """.trimIndent())
 
@@ -162,7 +164,7 @@ class RequestAuthenticationTest: ApplicationEngineTest()
                         "email" : "policy@test.test",
                         "password" : "test",
                         "scope" : { "auth": [$formattedScope] },
-                        "refresh" : "false"
+                        "refresh" : false
                     }
                 """.trimIndent())
 
