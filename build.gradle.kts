@@ -9,7 +9,9 @@ val logback_version: String by project
 val junit_version: String by project
 val json_kotlin_test: String by project
 val argon2_version: String by project
+val jackson_version: String by project
 val kmongo_version: String by project
+val mongodb_version: String by project
 
 plugins {
     application
@@ -50,9 +52,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
-    implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
 
     implementation("io.ktor:ktor-server-status-pages:$ktor_version")
     implementation("io.ktor:ktor-server-core-jvm:2.2.3")
@@ -61,6 +60,11 @@ dependencies {
 
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+
+    // Jackson
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
 
     // Koin
     implementation("io.insert-koin:koin-core:$koin_version")
@@ -74,7 +78,9 @@ dependencies {
     }
 
     // MongoDB
+    implementation("org.mongodb:mongodb-driver-sync:$mongodb_version")
     implementation("org.litote.kmongo:kmongo:$kmongo_version")
+    implementation("org.litote.kmongo:kmongo-id-serialization:$kmongo_version")
 
     // logback
     implementation("ch.qos.logback:logback-classic:$logback_version")

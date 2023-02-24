@@ -43,16 +43,20 @@ fun serviceModule(): Module
         single<AuthenticationIssuer> {
             val jwtTtl = get<Application>().environment.config.property("jwt.ttl").getString().toLong()
             val refreshTtl = get<Application>().environment.config.property("jwt.refresh-ttl-plus").getString().toLong()
-            UserPolicyValidatorAuthenticationIssuer(get(), get(), get(), get(), get(), jwtTtl + refreshTtl)
+            UserPolicyValidatorAuthenticationIssuer(
+                getRepository(),getRepository(),
+                get(), get(), get(), jwtTtl + refreshTtl)
         }
 
-        single<InvalidateAuthentication> { RepositoryInvalidateAuthentication(get(), get()) }
-        single<FindActiveAuthentications> { AuthRepositoryFindActiveAuthentications(get()) }
+        single<InvalidateAuthentication> { RepositoryInvalidateAuthentication(getRepository(), get()) }
+        single<FindActiveAuthentications> { AuthRepositoryFindActiveAuthentications(getRepository()) }
 
-        single<CreateUser> { CreateUserSelfPolicy(get(), get(), get()) }
-        single<GetUser> { SimpleRepositoryGetUser(get()) }
-        single<UpdateUserPolicies> { RepositoryUpdateUserPolicies(get(), get()) }
-        single<UpdateUserStatus> { RepositoryUpdateUserStatus(get(), get()) }
+        single<CreateUser> { CreateUserSelfPolicy(getRepository(), get(), get()) }
+        single<GetUser> { SimpleRepositoryGetUser(getRepository()) }
+        single<UpdateUserPolicies> { RepositoryUpdateUserPolicies(getRepository(), get()) }
+        single<UpdateUserStatus> {
+            RepositoryUpdateUserStatus(getRepository(), get())
+        }
 
         single<PolicyValidator> { WildcardPolicyValidator() }
     }

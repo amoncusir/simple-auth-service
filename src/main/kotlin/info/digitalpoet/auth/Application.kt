@@ -1,6 +1,7 @@
 package info.digitalpoet.auth
 
 import info.digitalpoet.auth.module.eventsModule
+import info.digitalpoet.auth.module.infrastructureModule
 import info.digitalpoet.auth.module.repositoryModule
 import info.digitalpoet.auth.module.serviceModule
 import info.digitalpoet.auth.plugins.configureRouting
@@ -38,6 +39,7 @@ fun Application.module()
         modules(
             ktorModule,
             eventsModule(),
+            infrastructureModule(),
             repositoryModule(),
             serviceModule()
         )

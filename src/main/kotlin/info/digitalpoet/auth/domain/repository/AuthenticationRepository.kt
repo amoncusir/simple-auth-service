@@ -4,7 +4,7 @@ import info.digitalpoet.auth.domain.model.Authentication
 import info.digitalpoet.auth.domain.values.RefreshId
 import info.digitalpoet.auth.domain.values.UserId
 
-interface AuthenticationRepository
+interface AuthenticationRepository: Repository
 {
     fun save(authentication: Authentication): Authentication
 
