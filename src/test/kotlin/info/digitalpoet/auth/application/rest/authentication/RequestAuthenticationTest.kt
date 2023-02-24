@@ -6,6 +6,7 @@ import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.command.user.CreateUser
 import info.digitalpoet.auth.domain.command.user.UpdateUserStatus
 import info.digitalpoet.auth.domain.values.Email
+import info.digitalpoet.auth.extension.WithMongoDBContainer
 import info.digitalpoet.auth.module
 import info.digitalpoet.auth.testUser
 import io.kjson.test.JSONExpect.Companion.expectJSON
@@ -20,20 +21,23 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
+@WithMongoDBContainer
 class RequestAuthenticationTest: ApplicationEngineTest()
 {
-    override val engine = createTestApplicationWithConfig(HoconApplicationConfig(ConfigFactory.load("test.conf"))) {
+    override val engineFactory = {
+        createTestApplicationWithConfig(HoconApplicationConfig(ConfigFactory.load("test.conf"))) {
 
-        module()
+            module()
 
-        get<CreateUser>().apply {
-            testUser()
-            testUser("admin@test.test")
-            testUser("invalid@test.test")
-        }
+            get<CreateUser>().apply {
+                testUser()
+                testUser("admin@test.test")
+                testUser("invalid@test.test")
+            }
 
-        get<UpdateUserStatus>().apply {
-            this(Email("invalid@test.test"), false)
+            get<UpdateUserStatus>().apply {
+                this(Email("invalid@test.test"), false)
+            }
         }
     }
 

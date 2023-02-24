@@ -6,3 +6,6 @@ class NotFoundEntity(entityId: String, entityName: String, cause: Throwable? = n
     RepositoryException("Can't found the ID $entityId on $entityName", cause)
 
 class InvalidAuthentication(message: String?, cause: Throwable? = null): RepositoryException(message, cause)
+
+class DuplicateEntity(message: String?, cause: Throwable? = null):
+    RepositoryException(message, cause)

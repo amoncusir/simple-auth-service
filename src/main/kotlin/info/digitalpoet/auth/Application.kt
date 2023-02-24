@@ -10,6 +10,7 @@ import info.digitalpoet.auth.plugins.configureSerialization
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 
@@ -31,6 +32,18 @@ fun Application.module()
 
     plugins()
 
+    koin(
+        eventsModule(),
+        infrastructureModule(),
+        repositoryModule(),
+        serviceModule()
+    )
+}
+
+fun Application.koin(vararg module: Module) {
+
+    val applicationModule = this
+
     install(Koin) {
         val ktorModule = module(createdAtStart = true) {
             single<Application> { applicationModule }
@@ -38,10 +51,7 @@ fun Application.module()
 
         modules(
             ktorModule,
-            eventsModule(),
-            infrastructureModule(),
-            repositoryModule(),
-            serviceModule()
+            *module
         )
     }
 }

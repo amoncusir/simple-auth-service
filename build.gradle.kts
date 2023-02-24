@@ -12,6 +12,7 @@ val argon2_version: String by project
 val jackson_version: String by project
 val kmongo_version: String by project
 val mongodb_version: String by project
+val testcontainers_version: String by project
 
 plugins {
     application
@@ -78,8 +79,8 @@ dependencies {
     }
 
     // MongoDB
-    implementation("org.mongodb:mongodb-driver-sync:$mongodb_version")
-    implementation("org.litote.kmongo:kmongo:$kmongo_version")
+//    implementation("org.mongodb:mongodb-driver-sync:$mongodb_version")
+    implementation("org.litote.kmongo:kmongo-serialization:$kmongo_version")
     implementation("org.litote.kmongo:kmongo-id-serialization:$kmongo_version")
 
     // logback
@@ -88,7 +89,6 @@ dependencies {
     // Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-
 
     //JUnit
     testImplementation("org.junit.jupiter:junit-jupiter:$junit_version")
@@ -99,6 +99,11 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-common")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-annotations-common")
     }
+
+    //Testcontainers
+    testImplementation("org.testcontainers:testcontainers:$testcontainers_version")
+    testImplementation("org.testcontainers:mongodb:$testcontainers_version")
+    testImplementation("org.testcontainers:junit-jupiter:$testcontainers_version")
 }
 
 tasks.test {

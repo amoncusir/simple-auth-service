@@ -1,6 +1,8 @@
 package info.digitalpoet.auth
 
 import info.digitalpoet.auth.domain.command.user.CreateUser
+import info.digitalpoet.auth.domain.repository.Repository
+import info.digitalpoet.auth.module.getRepository
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.engine.*
@@ -35,16 +37,23 @@ fun createTestApplicationWithConfig(
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class ApplicationEngineTest
 {
-    abstract val engine: TestApplicationEngine
+    abstract val engineFactory: () -> TestApplicationEngine
+
+    lateinit var engine: TestApplicationEngine
 
     val application: Application
         get() = engine.application
 
     inline fun <reified T: Any> get() = application.get<T>()
 
+    inline fun <reified T: Repository> getRepo() = application.getRepository<T>()
+
     @BeforeAll
     fun startEngine() {
         println("Start")
+
+        if (!this::engine.isInitialized) engine = engineFactory()
+
         engine.start()
     }
 

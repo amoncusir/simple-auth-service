@@ -8,6 +8,7 @@ import info.digitalpoet.auth.domain.command.user.CreateUser
 import info.digitalpoet.auth.domain.command.user.UpdateUserPolicies
 import info.digitalpoet.auth.domain.model.Policy
 import info.digitalpoet.auth.domain.values.Email
+import info.digitalpoet.auth.extension.WithMongoDBContainer
 import info.digitalpoet.auth.module
 import info.digitalpoet.auth.testUser
 import io.kjson.test.JSONExpect
@@ -19,19 +20,22 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@WithMongoDBContainer
 class GetAuthorizedUserTest: ApplicationEngineTest() {
 
-    override val engine = createTestApplicationWithConfig(HoconApplicationConfig(ConfigFactory.load("test.conf"))) {
+    override val engineFactory = {
+        createTestApplicationWithConfig(HoconApplicationConfig(ConfigFactory.load("test.conf"))) {
 
-        module()
+            module()
 
-        get<CreateUser>().apply {
-            testUser()
-            testUser("admin@test.test")
-        }
+            get<CreateUser>().apply {
+                testUser()
+                testUser("admin@test.test")
+            }
 
-        get<UpdateUserPolicies>().apply {
-            this(Email("admin@test.test"), listOf(Policy.buildWildcard("auth")))
+            get<UpdateUserPolicies>().apply {
+                this(Email("admin@test.test"), listOf(Policy.buildWildcard("auth")))
+            }
         }
     }
 

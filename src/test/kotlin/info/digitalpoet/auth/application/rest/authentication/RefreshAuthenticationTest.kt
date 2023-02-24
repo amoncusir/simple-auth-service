@@ -6,27 +6,29 @@ import info.digitalpoet.auth.application.rest.requestAuthenticationToken
 import info.digitalpoet.auth.application.rest.requestAuthenticationTokenRefresh
 import info.digitalpoet.auth.createTestApplicationWithConfig
 import info.digitalpoet.auth.domain.command.user.CreateUser
+import info.digitalpoet.auth.extension.WithMongoDBContainer
 import info.digitalpoet.auth.module
 import info.digitalpoet.auth.testUser
 import io.kjson.test.JSONExpect.Companion.expectJSON
 import io.ktor.http.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
-import org.junit.jupiter.params.provider.ValueSource
 import org.koin.ktor.ext.get
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
+@WithMongoDBContainer
 class RefreshAuthenticationTest: ApplicationEngineTest()
 {
-    override val engine = createTestApplicationWithConfig(HoconApplicationConfig(ConfigFactory.load("test.conf"))) {
+    override val engineFactory = {
+        createTestApplicationWithConfig(HoconApplicationConfig(ConfigFactory.load("test.conf"))) {
 
-        module()
+            module()
 
-        get<CreateUser>().apply {
-            testUser()
+            get<CreateUser>().apply {
+                testUser()
+            }
         }
     }
 
