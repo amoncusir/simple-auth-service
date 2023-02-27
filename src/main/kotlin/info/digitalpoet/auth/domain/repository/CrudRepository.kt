@@ -8,5 +8,5 @@ interface CrudRepository<in ID, Entity>: Repository
 
     fun findById(id: ID): Entity
 
-    fun delete(id: ID): Entity
+//    fun delete(id: ID): Entity
 }

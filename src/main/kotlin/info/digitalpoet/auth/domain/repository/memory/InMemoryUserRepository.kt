@@ -37,10 +37,10 @@ class InMemoryUserRepository(userList: List<User> = listOf()): UserRepository
         return cache[id.toString()] ?: throw NotFoundEntity(id.toString(), "User")
     }
 
-    override fun delete(id: UserId): User
-    {
-        return cache.remove(id.toString()) ?: throw NotFoundEntity(id.toString(), "User")
-    }
+//    override fun delete(id: UserId): User
+//    {
+//        return cache.remove(id.toString()) ?: throw NotFoundEntity(id.toString(), "User")
+//    }
 
     fun clear() {
         cache.clear()

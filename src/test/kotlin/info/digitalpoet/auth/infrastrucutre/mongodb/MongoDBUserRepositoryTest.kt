@@ -12,23 +12,21 @@ import info.digitalpoet.auth.domain.repository.DuplicateEntity
 import info.digitalpoet.auth.domain.repository.UserRepository
 import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.domain.values.UserId
+import info.digitalpoet.auth.extension.GenericStaticContainerExtension
 import info.digitalpoet.auth.extension.WithMongoDBContainer
 import info.digitalpoet.auth.infrastructure.mongodb.MongoDBUserRepository
 import info.digitalpoet.auth.koin
 import info.digitalpoet.auth.module.eventsModule
-import info.digitalpoet.auth.module.getRepository
 import info.digitalpoet.auth.module.infrastructureModule
 import info.digitalpoet.auth.module.repositoryModule
-import io.ktor.server.application.*
 import io.ktor.server.config.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.koin.ktor.plugin.Koin
-import org.litote.kmongo.getCollection
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @WithMongoDBContainer
+@GenericStaticContainerExtension.Lifecycle(GenericStaticContainerExtension.Lifecycle.CleanUp.AFTER_METHOD)
 class MongoDBUserRepositoryTest: ApplicationEngineTest()
 {
     override val engineFactory = {
@@ -93,5 +91,53 @@ class MongoDBUserRepositoryTest: ApplicationEngineTest()
         assertThrows<DuplicateEntity> {
             repository.save(user)
         }
+    }
+
+    @Test
+    fun `save user and get by Id`()
+    {
+        val repository = getRepo<UserRepository>()
+
+        val user = User(
+            UserId.new(),
+            Email("test@test.test"),
+            "hashhh",
+            true,
+            Policies(Policy("auth", "self"))
+        )
+
+        repository.save(user)
+        val savedUser = repository.findById(user.userId)
+
+        assertNotNull(savedUser)
+        assertEquals(user.userId, savedUser.userId)
+        assertEquals(user.email, savedUser.email)
+        assertEquals(user.hashedPassword, savedUser.hashedPassword)
+        assertEquals(user.isActive, savedUser.isActive)
+        assertEquals(user.policies, savedUser.policies)
+    }
+
+    @Test
+    fun `save user and get by Email`()
+    {
+        val repository = getRepo<UserRepository>()
+
+        val user = User(
+            UserId.new(),
+            Email("test@test.test"),
+            "hashhh",
+            true,
+            Policies(Policy("auth", "self"))
+        )
+
+        repository.save(user)
+        val savedUser = repository.findUserByEmail(user.email)
+
+        assertNotNull(savedUser)
+        assertEquals(user.userId, savedUser.userId)
+        assertEquals(user.email, savedUser.email)
+        assertEquals(user.hashedPassword, savedUser.hashedPassword)
+        assertEquals(user.isActive, savedUser.isActive)
+        assertEquals(user.policies, savedUser.policies)
     }
 }

@@ -31,7 +31,7 @@ data class Policy(
     }
 }
 
-class Policies(val policies: Set<Policy>)
+data class Policies(val policies: Set<Policy>)
 {
     constructor(vararg policy: Policy): this(policy.toSet())
 
