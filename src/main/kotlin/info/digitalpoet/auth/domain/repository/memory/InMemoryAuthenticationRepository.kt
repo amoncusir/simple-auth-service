@@ -7,6 +7,7 @@ import info.digitalpoet.auth.domain.repository.NotFoundEntity
 import info.digitalpoet.auth.domain.values.RefreshId
 import info.digitalpoet.auth.domain.values.UserId
 import java.time.Instant
+import java.time.LocalDateTime
 
 class InMemoryAuthenticationRepository: AuthenticationRepository
 {
@@ -38,7 +39,7 @@ class InMemoryAuthenticationRepository: AuthenticationRepository
 
     override fun findByUserId(userId: UserId): List<Authentication>
     {
-        val now = Instant.now()
+        val now = LocalDateTime.now()
         val auths = cache
             .entries
             .map { it.value }

@@ -9,3 +9,5 @@ class InvalidAuthentication(message: String?, cause: Throwable? = null): Reposit
 
 class DuplicateEntity(message: String?, cause: Throwable? = null):
     RepositoryException(message, cause)
+
+class DeleteFailed(message: String?, cause: Throwable? = null): RepositoryException(message, cause)

@@ -13,6 +13,7 @@ import info.digitalpoet.auth.domain.repository.UserRepository
 import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.domain.values.RefreshId
 import java.time.Instant
+import java.time.LocalDateTime
 
 interface AuthenticationIssuer
 {
@@ -61,13 +62,7 @@ class UserPolicyValidatorAuthenticationIssuer(
             throw InvalidPolicies("Invalid requested policies for user: ${user.userId}")
         }
 
-        val auth = Authentication(
-            user,
-            scope,
-            request.clientId,
-            Instant.now().plusSeconds(refreshTokenTtl),
-            if (request.withRefresh) RefreshId.new() else null
-        )
+        val auth = Authentication.with(request.withRefresh, user, request.clientId, refreshTokenTtl, scope)
 
         if (request.withRefresh) authenticationRepository.save(auth)
 
@@ -84,7 +79,7 @@ class UserPolicyValidatorAuthenticationIssuer(
             throw InvalidRefreshId("Not Found refreshId: $refreshId")
         }
 
-        if(authentication.ttl.isBefore(Instant.now())) {
+        if(authentication.isExpired()) {
             throw InvalidRefreshId("Expired refreshId: $refreshId")
         }
 
@@ -92,7 +87,7 @@ class UserPolicyValidatorAuthenticationIssuer(
 
         policyValidator(authentication.user, authentication.scope)
 
-        val newAuth = authentication.newAuth(refreshId = RefreshId.new(), Instant.now().plusSeconds(refreshTokenTtl))
+        val newAuth = authentication.newAuth(ttl = refreshTokenTtl)
 
         authenticationRepository.save(newAuth)
 

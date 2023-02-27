@@ -2,65 +2,15 @@ package info.digitalpoet.auth.infrastructure.mongodb
 
 import com.mongodb.MongoWriteException
 import com.mongodb.client.MongoDatabase
-import info.digitalpoet.auth.domain.model.Policies
-import info.digitalpoet.auth.domain.model.Policy
 import info.digitalpoet.auth.domain.model.User
 import info.digitalpoet.auth.domain.repository.DuplicateEntity
 import info.digitalpoet.auth.domain.repository.NotFoundEntity
 import info.digitalpoet.auth.domain.repository.UserRepository
 import info.digitalpoet.auth.domain.values.Email
 import info.digitalpoet.auth.domain.values.UserId
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import info.digitalpoet.auth.infrastructure.mongodb.data.UserPersistence
+import info.digitalpoet.auth.infrastructure.mongodb.data.toPersistence
 import org.litote.kmongo.*
-import org.litote.kmongo.id.StringId
-
-@Serializable
-data class UserPersistence(
-    @Contextual
-    @SerialName("_id")
-    val userId: Id<String>,
-    val email: String,
-    val hashedPassword: String,
-    val isActive: Boolean,
-    val policies: List<PolicyPersistence>
-) {
-    constructor(from: User): this(
-        from.userId.toPersistence(),
-        from.email.toString(),
-        from.hashedPassword,
-        from.isActive,
-        from.policies.toPersistence()
-    )
-
-    fun toDomain(): User = User(
-        UserId(userId.toString()),
-        Email(email),
-        hashedPassword,
-        isActive,
-        Policies(policies.map(PolicyPersistence::toDomain).toSet())
-    )
-}
-
-fun User.toPersistence() = UserPersistence(this)
-fun UserId.toPersistence() = StringId<String>(this.toString())
-
-@Serializable
-data class PolicyPersistence(
-    val service: String,
-    val actions: Set<String>
-) {
-    constructor(from: Policy): this(
-        from.service,
-        from.actions
-    )
-
-    fun toDomain(): Policy = Policy(service, actions)
-}
-
-fun Policy.toPersistence() = PolicyPersistence(this)
-fun Policies.toPersistence() = policies.map { it.toPersistence() }
 
 class MongoDBUserRepository(
     database: MongoDatabase

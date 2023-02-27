@@ -2,6 +2,8 @@ package info.digitalpoet.auth.domain.model
 
 import info.digitalpoet.auth.domain.values.RefreshId
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.chrono.ChronoLocalDateTime
 
 data class AuthenticationScope(
     val service: String,
@@ -26,14 +28,41 @@ data class Authentication(
     /** ID of the client that request the authentication */
     val client: String,
     /** Time to live: Date unit the token was valid */
-    val ttl: Instant,
+    val ttl: LocalDateTime,
     /**
      * Token refresh ID to request a valid token with the same configuration.
      * If it's null, can't be request a new token.
      */
     val refreshId: RefreshId?
 ) {
-    fun newAuth(refreshId: RefreshId?, ttl: Instant): Authentication {
+
+    companion object {
+
+        fun with(refresh: Boolean, user: User, client: String, plusTtl: Long, scope: List<AuthenticationScope>) =
+            Authentication(if (refresh) RefreshId.new() else null, user, client, plusTtl, scope)
+
+        fun withRefresh(user: User, client: String, plusTtl: Long, scope: List<AuthenticationScope>) =
+            Authentication(RefreshId.new(), user, client, plusTtl, scope)
+
+        fun withoutRefresh(user: User, client: String, plusTtl: Long, scope: List<AuthenticationScope>) =
+            Authentication(null, user, client, plusTtl, scope)
+    }
+
+    constructor(refreshId: RefreshId?, user: User, client: String, plusTtl: Long, scope: List<AuthenticationScope>):
+            this(user, scope, client, LocalDateTime.now().plusSeconds(plusTtl), refreshId)
+
+    fun newAuth(refreshId: RefreshId, ttl: LocalDateTime): Authentication {
         return copy(ttl = ttl, refreshId = refreshId)
     }
+
+    fun newAuth(ttl: LocalDateTime): Authentication {
+        return copy(ttl = ttl, refreshId = RefreshId.new())
+    }
+
+    fun newAuth(ttl: Long): Authentication {
+        return newAuth(ttl = LocalDateTime.now().plusSeconds(ttl))
+    }
+
+    fun isExpired(compare: ChronoLocalDateTime<*>? = null): Boolean =
+        ttl.isBefore(compare ?: LocalDateTime.now())
 }

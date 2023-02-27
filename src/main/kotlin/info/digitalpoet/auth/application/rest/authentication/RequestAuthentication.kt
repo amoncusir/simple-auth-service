@@ -2,7 +2,7 @@ package info.digitalpoet.auth.application.rest.authentication
 
 import info.digitalpoet.auth.domain.command.authentication.AuthenticationIssuer
 import info.digitalpoet.auth.domain.command.token.TokenBuilder
-import info.digitalpoet.auth.plugins.SerializableCharArray
+import info.digitalpoet.auth.plugins.serialization.SerializableCharArray
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
