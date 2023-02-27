@@ -4,10 +4,7 @@ import com.mongodb.MongoWriteException
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import info.digitalpoet.auth.domain.model.Authentication
-import info.digitalpoet.auth.domain.repository.AuthenticationRepository
-import info.digitalpoet.auth.domain.repository.DeleteFailed
-import info.digitalpoet.auth.domain.repository.DuplicateEntity
-import info.digitalpoet.auth.domain.repository.InvalidAuthentication
+import info.digitalpoet.auth.domain.repository.*
 import info.digitalpoet.auth.domain.values.RefreshId
 import info.digitalpoet.auth.domain.values.UserId
 import info.digitalpoet.auth.infrastructure.mongodb.data.PolicyServiceWithActionsPersistence
@@ -81,13 +78,13 @@ class MongoDBAuthenticationRepository(database: MongoDatabase): AuthenticationRe
 
     override fun delete(refreshId: RefreshId): Authentication
     {
-        val result = try {
+        val result: AuthenticationPersistence? = try {
             collection.findOneAndDelete(AuthenticationPersistence::refreshId eq StringId(refreshId.toString()))
         } catch (e: MongoWriteException) {
             throw e
         }
 
-        return result.toDomain()
+        return result?.toDomain() ?: throw NotFoundEntity(refreshId.toString(), "Authentication")
     }
 
     override fun deleteByUserId(userId: UserId): List<Authentication>
