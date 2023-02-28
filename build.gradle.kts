@@ -39,6 +39,10 @@ tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile:
     }
 }
 
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+}
+
 ktor {
     fatJar {
         archiveFileName.set("fat.jar")
