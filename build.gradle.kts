@@ -1,9 +1,10 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 val type_safe: String by project
 val config4k: String by project
 val ktor_version: String by project
 val kotlin_version: String by project
 val kotlinx_serialization_version: String by project
-val kotlinx_serialization_datetime_version: String by project
 val koin_version: String by project
 val koin_test_version: String by project
 val logback_version: String by project
@@ -12,13 +13,17 @@ val json_kotlin_test: String by project
 val argon2_version: String by project
 val jackson_version: String by project
 val kmongo_version: String by project
+val kbson_version: String by project
 val mongodb_version: String by project
 val testcontainers_version: String by project
 
 plugins {
     application
+
     kotlin("jvm") version "1.8.10"
     kotlin("plugin.serialization") version "1.8.10"
+
+    id("io.ktor.plugin") version "2.2.3"
 }
 
 group = "info.digitalpoet.auth"
@@ -26,6 +31,12 @@ version = "0.0.1"
 
 application {
     mainClass.set("info.digitalpoet.auth.ApplicationKt")
+}
+
+ktor {
+    fatJar {
+        archiveFileName.set("fat.jar")
+    }
 }
 
 repositories {
@@ -80,15 +91,14 @@ dependencies {
     }
 
     // MongoDB
-//    implementation("org.mongodb:mongodb-driver-sync:$mongodb_version")
     implementation("org.litote.kmongo:kmongo-serialization:$kmongo_version")
     implementation("org.litote.kmongo:kmongo-id-serialization:$kmongo_version")
+    implementation("com.github.jershell:kbson:")
 
     // logback
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     // Kotlin
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinx_serialization_datetime_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 

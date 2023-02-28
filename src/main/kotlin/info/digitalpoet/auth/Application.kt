@@ -28,8 +28,6 @@ fun Application.plugins()
 
 fun Application.module()
 {
-    val applicationModule = this
-
     plugins()
 
     koin(
