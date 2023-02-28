@@ -24,7 +24,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: amoncusir/simple-auth,ghcr.io/amoncusir/app
+          images: ghcr.io/amoncusir/simple-auth-service
           # generate Docker tags based on the following events/attributes
           tags: |
             type=edge

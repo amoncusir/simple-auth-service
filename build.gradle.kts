@@ -33,6 +33,12 @@ application {
     mainClass.set("info.digitalpoet.auth.ApplicationKt")
 }
 
+tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile::class.java) {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+    }
+}
+
 ktor {
     fatJar {
         archiveFileName.set("fat.jar")
